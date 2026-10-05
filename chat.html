@@ -202,9 +202,10 @@ const auth = getAuth(app);
 await signInAnonymously(auth);
     const database = getDatabase(app);
 
-    const messagesRef =
-      ref(database, "privateMessages");
+const userId = auth.currentUser.uid;
 
+const messagesRef =
+  ref(database, "privateMessages/" + userId);
 
     // GET USER NAME
 
