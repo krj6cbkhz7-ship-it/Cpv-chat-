@@ -378,7 +378,18 @@ const replyInput =
 
 const replyButton =
   document.getElementById("replyButton");
+const imageInput =
+  document.getElementById("imageInput");
 
+const imageButton =
+  document.getElementById("imageButton");
+
+imageButton.addEventListener(
+  "click",
+  function() {
+    imageInput.click();
+  }
+);
 
 async function sendReply() {
 
@@ -434,7 +445,124 @@ replyButton.addEventListener(
   "click",
   sendReply
 );
+imageInput.addEventListener(
+  "change",
+  function() {
 
+    const file = imageInput.files[0];
+
+    if (!file) {
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      alert("Please select a picture.");
+      return;
+    }
+
+    if (!selectedGuestId) {
+      alert("Please open a guest conversation first.");
+      imageInput.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(event) {
+
+      const image = new Image();
+
+      image.onload = async function() {
+
+        const canvas =
+          document.createElement("canvas");
+
+        const maxWidth = 600;
+        const maxHeight = 600;
+
+        let width = image.width;
+        let height = image.height;
+
+        if (width > maxWidth) {
+          height =
+            height * (maxWidth / width);
+
+          width = maxWidth;
+        }
+
+        if (height > maxHeight) {
+          width =
+            width * (maxHeight / height);
+
+          height = maxHeight;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx =
+          canvas.getContext("2d");
+
+        ctx.drawImage(
+          image,
+          0,
+          0,
+          width,
+          height
+        );
+
+        const imageData =
+          canvas.toDataURL(
+            "image/jpeg",
+            0.5
+          );
+
+        try {
+
+          const guestMessagesRef =
+            ref(
+              database,
+              "privateMessages/" +
+              selectedGuestId
+            );
+
+          const { push } =
+            await import(
+              "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js"
+            );
+
+          await push(
+            guestMessagesRef,
+            {
+              name: "Admin",
+              image: imageData,
+              timestamp: Date.now()
+            }
+          );
+
+          imageInput.value = "";
+
+        } catch (error) {
+
+          console.error(
+            "Image send error:",
+            error
+          );
+
+          alert(
+            "Picture failed: " +
+            error.message
+          );
+        }
+      };
+
+      image.src = event.target.result;
+    };
+
+    reader.readAsDataURL(file);
+
+  }
+);
 
 replyInput.addEventListener(
   "keydown",
