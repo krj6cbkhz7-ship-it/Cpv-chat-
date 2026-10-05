@@ -37,10 +37,66 @@
       font-size: 13px;
     }
 
-    .messages {
+    .back {
+      display: none;
+      margin-top: 12px;
+      padding: 9px 16px;
+      border: none;
+      border-radius: 20px;
+      background: white;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .inbox {
+      max-width: 600px;
+      margin: auto;
+    }
+
+    .guest {
+      padding: 17px;
+      border-bottom: 1px solid #292929;
+      background: #111;
+      cursor: pointer;
+    }
+
+    .guest:active {
+      background: #222;
+    }
+
+    .guest-name {
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+    }
+
+    .preview {
+      color: #aaa;
+      margin-top: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .guest-time {
+      color: #777;
+      font-size: 11px;
+      margin-top: 5px;
+    }
+
+    .conversation {
+      display: none;
       max-width: 600px;
       margin: auto;
       padding: 18px;
+    }
+
+    .conversation-title {
+      padding: 12px 0;
+      font-size: 18px;
+      font-weight: bold;
+      color: #ff3333;
     }
 
     .message {
@@ -74,8 +130,15 @@
       word-wrap: break-word;
     }
 
+    .empty {
+      padding: 25px;
+      text-align: center;
+      color: #777;
+    }
+
     .error {
       color: #ff5555;
+      padding: 20px;
     }
   </style>
 </head>
@@ -90,11 +153,22 @@
       ● Connecting...
     </div>
 
+    <button
+      class="back"
+      id="backButton">
+      ← Back to Guests
+    </button>
+
   </div>
 
   <div
-    class="messages"
-    id="messages">
+    class="inbox"
+    id="inbox">
+  </div>
+
+  <div
+    class="conversation"
+    id="conversation">
   </div>
 
 
@@ -146,21 +220,24 @@
     const app =
       initializeApp(firebaseConfig);
 
-
     const auth =
       getAuth(app);
-
 
     const database =
       getDatabase(app);
 
 
-    const messagesDiv =
-      document.getElementById("messages");
+    const inbox =
+      document.getElementById("inbox");
 
+    const conversation =
+      document.getElementById("conversation");
 
     const status =
       document.getElementById("status");
+
+    const backButton =
+      document.getElementById("backButton");
 
 
     /*
@@ -173,11 +250,6 @@
         auth,
         "damilareobidairo@gmail.com",
         "Damkidob"
-      );
-
-      console.log(
-        "Admin signed in:",
-        auth.currentUser.uid
       );
 
       status.textContent =
@@ -193,12 +265,10 @@
       status.textContent =
         "● Admin login failed";
 
-      messagesDiv.innerHTML =
-        "<div class='message'>" +
-        "<div class='name'>ADMIN ERROR</div>" +
-        "<div class='text error'>" +
+      inbox.innerHTML =
+        "<div class='error'>" +
+        "ADMIN ERROR: " +
         error.message +
-        "</div>" +
         "</div>";
 
       throw error;
@@ -206,7 +276,7 @@
 
 
     /*
-      READ ALL PRIVATE GUEST ROOMS
+      READ ALL GUEST ROOMS
     */
 
     const privateMessagesRef =
@@ -216,136 +286,17 @@
       );
 
 
+    let allRooms = {};
+
+
     onValue(
       privateMessagesRef,
       function(snapshot) {
 
-        messagesDiv.innerHTML = "";
+        allRooms =
+          snapshot.val() || {};
 
-        const allRooms =
-          snapshot.val();
-
-
-        if (!allRooms) {
-
-          messagesDiv.innerHTML =
-            "<div class='message'>" +
-            "<div class='text'>" +
-            "No guest messages yet." +
-            "</div>" +
-            "</div>";
-
-          return;
-        }
-
-
-        /*
-          Go through every guest
-        */
-
-        Object.entries(allRooms).forEach(
-          function([userId, userMessages]) {
-
-            if (!userMessages) {
-              return;
-            }
-
-
-            /*
-              Go through every message
-              belonging to this guest
-            */
-
-            Object.values(userMessages).forEach(
-              function(message) {
-
-                if (!message) {
-                  return;
-                }
-
-
-                const messageElement =
-                  document.createElement("div");
-
-                messageElement.className =
-                  "message";
-
-
-                const nameElement =
-                  document.createElement("div");
-
-                nameElement.className =
-                  "name";
-
-                nameElement.textContent =
-                  message.name || "Guest";
-
-
-                const guestIdElement =
-                  document.createElement("div");
-
-                guestIdElement.className =
-                  "guest-id";
-
-                guestIdElement.textContent =
-                  "Guest ID: " + userId;
-
-
-                const textElement =
-                  document.createElement("div");
-
-                textElement.className =
-                  "text";
-
-                textElement.textContent =
-                  message.text || "";
-
-
-                const timeElement =
-                  document.createElement("div");
-
-                timeElement.className =
-                  "time";
-
-
-                if (message.timestamp) {
-
-                  const date =
-                    new Date(
-                      message.timestamp
-                    );
-
-                  timeElement.textContent =
-                    date.toLocaleString();
-                }
-
-
-                messageElement.appendChild(
-                  nameElement
-                );
-
-                messageElement.appendChild(
-                  guestIdElement
-                );
-
-                messageElement.appendChild(
-                  textElement
-                );
-
-                messageElement.appendChild(
-                  timeElement
-                );
-
-
-                messagesDiv.appendChild(
-                  messageElement
-                );
-
-              }
-            );
-
-          }
-        );
+        showInbox();
 
       },
       function(error) {
@@ -358,13 +309,293 @@
         status.textContent =
           "● Database error";
 
-        messagesDiv.innerHTML =
-          "<div class='message'>" +
-          "<div class='name'>DATABASE ERROR</div>" +
-          "<div class='text error'>" +
+        inbox.innerHTML =
+          "<div class='error'>" +
+          "DATABASE ERROR: " +
           error.message +
-          "</div>" +
           "</div>";
+      }
+    );
+
+
+    /*
+      SHOW GUEST LIST
+    */
+
+    function showInbox() {
+
+      inbox.style.display =
+        "block";
+
+      conversation.style.display =
+        "none";
+
+      backButton.style.display =
+        "none";
+
+      inbox.innerHTML = "";
+
+
+      const guestIds =
+        Object.keys(allRooms);
+
+
+      if (guestIds.length === 0) {
+
+        inbox.innerHTML =
+          "<div class='empty'>" +
+          "No guest messages yet." +
+          "</div>";
+
+        return;
+      }
+
+
+      guestIds.forEach(
+        function(userId) {
+
+          const userMessages =
+            allRooms[userId];
+
+          if (!userMessages) {
+            return;
+          }
+
+
+          const messages =
+            Object.values(userMessages)
+              .filter(
+                message => message
+              )
+              .sort(
+                (a, b) =>
+                  (a.timestamp || 0) -
+                  (b.timestamp || 0)
+              );
+
+
+          if (messages.length === 0) {
+            return;
+          }
+
+
+          const lastMessage =
+            messages[messages.length - 1];
+
+
+          const guest =
+            document.createElement("div");
+
+          guest.className =
+            "guest";
+
+
+          const name =
+            document.createElement("div");
+
+          name.className =
+            "guest-name";
+
+          name.textContent =
+            lastMessage.name ||
+            "Guest";
+
+
+          const preview =
+            document.createElement("div");
+
+          preview.className =
+            "preview";
+
+          preview.textContent =
+            lastMessage.text ||
+            "No message";
+
+
+          const time =
+            document.createElement("div");
+
+          time.className =
+            "guest-time";
+
+
+          if (lastMessage.timestamp) {
+
+            time.textContent =
+              new Date(
+                lastMessage.timestamp
+              ).toLocaleString();
+
+          }
+
+
+          guest.appendChild(name);
+          guest.appendChild(preview);
+          guest.appendChild(time);
+
+
+          guest.addEventListener(
+            "click",
+            function() {
+
+              openConversation(
+                userId
+              );
+
+            }
+          );
+
+
+          inbox.appendChild(guest);
+
+        }
+      );
+
+    }
+
+
+    /*
+      OPEN ONE GUEST CONVERSATION
+    */
+
+    function openConversation(userId) {
+
+      const userMessages =
+        allRooms[userId];
+
+      if (!userMessages) {
+        return;
+      }
+
+
+      const messages =
+        Object.values(userMessages)
+          .filter(
+            message => message
+          )
+          .sort(
+            (a, b) =>
+              (a.timestamp || 0) -
+              (b.timestamp || 0)
+          );
+
+
+      inbox.style.display =
+        "none";
+
+      conversation.style.display =
+        "block";
+
+      backButton.style.display =
+        "inline-block";
+
+
+      conversation.innerHTML =
+        "";
+
+
+      const title =
+        document.createElement("div");
+
+      title.className =
+        "conversation-title";
+
+      title.textContent =
+        "💬 " +
+        (messages[0]?.name || "Guest");
+
+
+      conversation.appendChild(
+        title
+      );
+
+
+      messages.forEach(
+        function(message) {
+
+          const box =
+            document.createElement("div");
+
+          box.className =
+            "message";
+
+
+          const name =
+            document.createElement("div");
+
+          name.className =
+            "name";
+
+          name.textContent =
+            message.name ||
+            "Guest";
+
+
+          const guestId =
+            document.createElement("div");
+
+          guestId.className =
+            "guest-id";
+
+          guestId.textContent =
+            "Guest ID: " +
+            userId;
+
+
+          const text =
+            document.createElement("div");
+
+          text.className =
+            "text";
+
+          text.textContent =
+            message.text ||
+            "";
+
+
+          const time =
+            document.createElement("div");
+
+          time.className =
+            "time";
+
+
+          if (message.timestamp) {
+
+            time.textContent =
+              new Date(
+                message.timestamp
+              ).toLocaleString();
+
+          }
+
+
+          box.appendChild(name);
+          box.appendChild(guestId);
+          box.appendChild(text);
+          box.appendChild(time);
+
+
+          conversation.appendChild(
+            box
+          );
+
+        }
+      );
+
+    }
+
+
+    /*
+      BACK BUTTON
+    */
+
+    backButton.addEventListener(
+      "click",
+      function() {
+
+        showInbox();
+
       }
     );
 
