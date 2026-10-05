@@ -138,12 +138,30 @@
       getAuth(app);
 
 
-    await signInWithEmailAndPassword(
-      auth,
-      "damilareobidairo@gmail.com",
-      "Damkidob"
-    );
+    try {
 
+  await signInWithEmailAndPassword(
+    auth,
+    "damilareobidairo@gmail.com",
+    "Damkidob"
+  );
+
+  console.log("Admin signed in");
+
+} catch (error) {
+
+  console.error("Admin login error:", error);
+
+  document.getElementById("messages").innerHTML =
+    "<div class='message'>" +
+    "<div class='name'>ADMIN ERROR</div>" +
+    "<div class='text'>" +
+    error.message +
+    "</div>" +
+    "</div>";
+
+  throw error;
+}
 
     console.log("Admin signed in");
 
