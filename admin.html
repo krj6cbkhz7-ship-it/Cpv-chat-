@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>CPV ADMIN CHAT</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #000;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    .header {
+      padding: 18px;
+      text-align: center;
+      background: #181818;
+      border-bottom: 1px solid #333;
+    }
+
+    .header h2 {
+      margin: 0;
+      color: red;
+    }
+
+    .status {
+      margin-top: 6px;
+      color: #4ade80;
+      font-size: 13px;
+    }
+
+    .messages {
+      max-width: 600px;
+      margin: auto;
+      padding: 18px;
+    }
+
+    .message {
+      background: #191919;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .name {
+      color: #ff3333;
+      font-weight: bold;
+    }
+
+    .time {
+      color: #888;
+      font-size: 11px;
+      margin-top: 6px;
+    }
+
+    .text {
+      margin-top: 8px;
+      font-size: 15px;
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+
+    <h2>🔐 CPV ADMIN CHAT</h2>
+
+    <div class="status">
+      ● Listening for new messages
+    </div>
+
+  </div>
+
+  <div
+    class="messages"
+    id="messages">
+  </div>
+<script type="module">
+
+  import { initializeApp }
+    from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+
+  import {
+    getDatabase,
+    ref,
+    onChildAdded
+  } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
+import {
+  getAuth,
+  signInAnonymously
+} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+
+  const firebaseConfig = {
+
+    apiKey: "AIzaSyDOUfBgQbjhOy025v0CZ4CvwnYG6Y2wYBU",
+
+    authDomain: "cpv-private-chat.firebaseapp.com",
+
+    databaseURL:
+      "https://cpv-private-chat-default-rtdb.firebaseio.com/",
+
+    projectId: "cpv-private-chat",
+
+    storageBucket:
+      "cpv-private-chat.firebasestorage.app",
+
+    messagingSenderId: "916226104692",
+
+    appId:
+      "1:916226104692:web:27be19c8a22df397bd6021",
+
+    measurementId: "G-SYWN64JMNH"
+  };
+
+
+  const app =
+    initializeApp(firebaseConfig);
+const auth =
+  getAuth(app);
+
+await signInAnonymously(auth);
+  console.log("Admin signed in");
+  const database =
+    getDatabase(app);
+
+  const messagesRef =
+    ref(database, "messages");
+
+
+  const messagesDiv =
+    document.getElementById("messages");
+
+
+  onChildAdded(
+    messagesRef,
+    function(snapshot) {
+
+      const message =
+        snapshot.val();
+
+      if (!message) {
+        return;
+      }
+
+
+      const messageElement =
+        document.createElement("div");
+
+      messageElement.className =
+        "message";
+
+
+      const nameElement =
+        document.createElement("div");
+
+      nameElement.className =
+        "name";
+
+      nameElement.textContent =
+        message.name || "Guest";
+
+
+      const textElement =
+        document.createElement("div");
+
+      textElement.className =
+        "text";
+
+      textElement.textContent =
+        message.text || "";
+
+
+      const timeElement =
+        document.createElement("div");
+
+      timeElement.className =
+        "time";
+
+
+      if (message.timestamp) {
+
+        const date =
+          new Date(message.timestamp);
+
+        timeElement.textContent =
+          date.toLocaleString();
+
+      }
+
+
+      messageElement.appendChild(
+        nameElement
+      );
+
+      messageElement.appendChild(
+        textElement
+      );
+
+      messageElement.appendChild(
+        timeElement
+      );
+
+
+      messagesDiv.appendChild(
+        messageElement
+      );
+
+    }
+  );
+
+</script>
+</body>
+</html>
