@@ -56,6 +56,12 @@
       font-weight: bold;
     }
 
+    .guest-id {
+      color: #777;
+      font-size: 10px;
+      margin-top: 3px;
+    }
+
     .time {
       color: #888;
       font-size: 11px;
@@ -67,6 +73,10 @@
       font-size: 15px;
       word-wrap: break-word;
     }
+
+    .error {
+      color: #ff5555;
+    }
   </style>
 </head>
 
@@ -76,8 +86,8 @@
 
     <h2>🔐 CPV ADMIN CHAT</h2>
 
-    <div class="status">
-      ● Listening for new messages
+    <div class="status" id="status">
+      ● Connecting...
     </div>
 
   </div>
@@ -87,6 +97,7 @@
     id="messages">
   </div>
 
+
   <script type="module">
 
     import { initializeApp }
@@ -95,7 +106,7 @@
     import {
       getDatabase,
       ref,
-      onChildAdded
+      onValue
     } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
 
     import {
@@ -106,7 +117,8 @@
 
     const firebaseConfig = {
 
-      apiKey: "AIzaSyDOUfBgQbjhOy025v0CZ4CvwnYG6Y2wYBU",
+      apiKey:
+        "AIzaSyDOUfBgQbjhOy025v0CZ4CvwnYG6Y2wYBU",
 
       authDomain:
         "cpv-private-chat.firebaseapp.com",
@@ -134,36 +146,9 @@
     const app =
       initializeApp(firebaseConfig);
 
+
     const auth =
       getAuth(app);
-
-
-    try {
-
-  await signInWithEmailAndPassword(
-    auth,
-    "damilareobidairo@gmail.com",
-    "Damkidob"
-  );
-
-  console.log("Admin signed in");
-
-} catch (error) {
-
-  console.error("Admin login error:", error);
-
-  document.getElementById("messages").innerHTML =
-    "<div class='message'>" +
-    "<div class='name'>ADMIN ERROR</div>" +
-    "<div class='text'>" +
-    error.message +
-    "</div>" +
-    "</div>";
-
-  throw error;
-}
-
-    console.log("Admin signed in");
 
 
     const database =
@@ -174,121 +159,213 @@
       document.getElementById("messages");
 
 
-    const privateMessagesRef =
-      ref(database, "privateMessages");
+    const status =
+      document.getElementById("status");
 
 
     /*
-      Listen for every guest room
+      ADMIN LOGIN
     */
 
-    onChildAdded(
+    try {
+
+      await signInWithEmailAndPassword(
+        auth,
+        "damilareobidairo@gmail.com",
+        "Damkidob"
+      );
+
+      console.log(
+        "Admin signed in:",
+        auth.currentUser.uid
+      );
+
+      status.textContent =
+        "● Admin online";
+
+    } catch (error) {
+
+      console.error(
+        "Admin login error:",
+        error
+      );
+
+      status.textContent =
+        "● Admin login failed";
+
+      messagesDiv.innerHTML =
+        "<div class='message'>" +
+        "<div class='name'>ADMIN ERROR</div>" +
+        "<div class='text error'>" +
+        error.message +
+        "</div>" +
+        "</div>";
+
+      throw error;
+    }
+
+
+    /*
+      READ ALL PRIVATE GUEST ROOMS
+    */
+
+    const privateMessagesRef =
+      ref(
+        database,
+        "privateMessages"
+      );
+
+
+    onValue(
       privateMessagesRef,
-      function(userSnapshot) {
+      function(snapshot) {
 
-        const userId =
-          userSnapshot.key;
+        messagesDiv.innerHTML = "";
+
+        const allRooms =
+          snapshot.val();
 
 
-        const userMessagesRef =
-          ref(
-            database,
-            "privateMessages/" + userId
-          );
+        if (!allRooms) {
+
+          messagesDiv.innerHTML =
+            "<div class='message'>" +
+            "<div class='text'>" +
+            "No guest messages yet." +
+            "</div>" +
+            "</div>";
+
+          return;
+        }
 
 
         /*
-          Listen for messages inside
-          this guest's private room
+          Go through every guest
         */
 
-        onChildAdded(
-          userMessagesRef,
-          function(messageSnapshot) {
+        Object.entries(allRooms).forEach(
+          function([userId, userMessages]) {
 
-            const message =
-              messageSnapshot.val();
-
-
-            if (!message) {
+            if (!userMessages) {
               return;
             }
 
 
-            const messageElement =
-              document.createElement("div");
+            /*
+              Go through every message
+              belonging to this guest
+            */
 
-            messageElement.className =
-              "message";
+            Object.values(userMessages).forEach(
+              function(message) {
 
-
-            const nameElement =
-              document.createElement("div");
-
-            nameElement.className =
-              "name";
-
-            nameElement.textContent =
-              message.name || "Guest";
+                if (!message) {
+                  return;
+                }
 
 
-            const textElement =
-              document.createElement("div");
+                const messageElement =
+                  document.createElement("div");
 
-            textElement.className =
-              "text";
-
-            textElement.textContent =
-              message.text || "";
+                messageElement.className =
+                  "message";
 
 
-            const timeElement =
-              document.createElement("div");
+                const nameElement =
+                  document.createElement("div");
 
-            timeElement.className =
-              "time";
+                nameElement.className =
+                  "name";
 
-
-            if (message.timestamp) {
-
-              const date =
-                new Date(message.timestamp);
-
-              timeElement.textContent =
-                date.toLocaleString();
-
-            }
+                nameElement.textContent =
+                  message.name || "Guest";
 
 
-            messageElement.appendChild(
-              nameElement
-            );
+                const guestIdElement =
+                  document.createElement("div");
 
-            messageElement.appendChild(
-              textElement
-            );
+                guestIdElement.className =
+                  "guest-id";
 
-            messageElement.appendChild(
-              timeElement
-            );
+                guestIdElement.textContent =
+                  "Guest ID: " + userId;
 
 
-            messagesDiv.appendChild(
-              messageElement
-            );
+                const textElement =
+                  document.createElement("div");
+
+                textElement.className =
+                  "text";
+
+                textElement.textContent =
+                  message.text || "";
 
 
-            window.scrollTo(
-              0,
-              document.body.scrollHeight
+                const timeElement =
+                  document.createElement("div");
+
+                timeElement.className =
+                  "time";
+
+
+                if (message.timestamp) {
+
+                  const date =
+                    new Date(
+                      message.timestamp
+                    );
+
+                  timeElement.textContent =
+                    date.toLocaleString();
+                }
+
+
+                messageElement.appendChild(
+                  nameElement
+                );
+
+                messageElement.appendChild(
+                  guestIdElement
+                );
+
+                messageElement.appendChild(
+                  textElement
+                );
+
+                messageElement.appendChild(
+                  timeElement
+                );
+
+
+                messagesDiv.appendChild(
+                  messageElement
+                );
+
+              }
             );
 
           }
-
         );
 
-      }
+      },
+      function(error) {
 
+        console.error(
+          "Database error:",
+          error
+        );
+
+        status.textContent =
+          "● Database error";
+
+        messagesDiv.innerHTML =
+          "<div class='message'>" +
+          "<div class='name'>DATABASE ERROR</div>" +
+          "<div class='text error'>" +
+          error.message +
+          "</div>" +
+          "</div>";
+      }
     );
 
   </script>
