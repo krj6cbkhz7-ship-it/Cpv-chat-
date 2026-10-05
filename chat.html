@@ -252,21 +252,28 @@ const messagesRef =
 
 
     // GET HTML ELEMENTS
+const messagesDiv =
+  document.getElementById("messages");
 
-    const messagesDiv =
-      document.getElementById("messages");
+const input =
+  document.getElementById("messageInput");
 
-    const input =
-      document.getElementById("messageInput");
+const sendButton =
+  document.getElementById("sendButton");
 
-    const sendButton =
-      document.getElementById("sendButton");
+const urlParams = new URLSearchParams(window.location.search);
+
+if (urlParams.get("activation") === "1") {
+  input.value =
+    "Hello, I want to get my membership activation code.";
+}
+
 const imageInput =
   document.getElementById("imageInput");
 
 const imageButton =
   document.getElementById("imageButton");
-
+    
 imageButton.addEventListener(
   "click",
   function() {
