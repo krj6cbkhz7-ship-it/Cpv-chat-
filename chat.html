@@ -122,6 +122,10 @@
       font-weight: bold;
       cursor: pointer;
     }
+
+    .chat-input button:active {
+      transform: scale(0.96);
+    }
   </style>
 </head>
 
@@ -162,6 +166,8 @@
     } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
 
 
+    // FIREBASE CONFIG
+
     const firebaseConfig = {
 
       apiKey: "AIzaSyDOUfBgQbjhOy025v0CZ4CvwnYG6Y2wYBU",
@@ -182,9 +188,10 @@
         "1:916226104692:web:27be19c8a22df397bd6021",
 
       measurementId: "G-SYWN64JMNH"
-
     };
 
+
+    // START FIREBASE
 
     const app = initializeApp(firebaseConfig);
 
@@ -193,6 +200,8 @@
     const messagesRef =
       ref(database, "messages");
 
+
+    // GET USER NAME
 
     let userName =
       localStorage.getItem("cpvChatName");
@@ -207,19 +216,18 @@
           userName.trim() === "") {
 
         userName = "Guest";
-
       }
 
-      userName =
-        userName.trim();
+      userName = userName.trim();
 
       localStorage.setItem(
         "cpvChatName",
         userName
       );
-
     }
 
+
+    // GET HTML ELEMENTS
 
     const messagesDiv =
       document.getElementById("messages");
@@ -231,34 +239,9 @@
       document.getElementById("sendButton");
 
 
+    // SEND MESSAGE
+
     async function sendMessage() {
-  const text = input.value.trim();
-
-  if (text === "") {
-    return;
-  }
-
-  if (!auth.currentUser) {
-    alert("Not connected to Firebase yet.");
-    return;
-  }
-
-  try {
-    await push(messagesRef, {
-      name: userName,
-      text: text,
-      timestamp: Date.now(),
-      userId: auth.currentUser.uid
-    });
-
-    input.value = "";
-    input.focus();
-
-  } catch (error) {
-    console.error(error);
-    alert("Message failed: " + error.message);
-  }
-}
 
       const text =
         input.value.trim();
@@ -267,24 +250,38 @@
         return;
       }
 
+      try {
 
-      push(messagesRef, {
+        await push(messagesRef, {
 
-        name: userName,
+          name: userName,
 
-        text: text,
+          text: text,
 
-        timestamp: Date.now()
+          timestamp: Date.now()
 
-      });
+        });
 
+        input.value = "";
 
-      input.value = "";
+        input.focus();
 
-      input.focus();
+      } catch (error) {
 
+        console.error(
+          "Firebase error:",
+          error
+        );
+
+        alert(
+          "Message failed: " +
+          error.message
+        );
+      }
     }
 
+
+    // SEND BUTTON
 
     sendButton.addEventListener(
       "click",
@@ -292,11 +289,15 @@
     );
 
 
+    // ENTER KEY
+
     input.addEventListener(
       "keydown",
       function(event) {
 
         if (event.key === "Enter") {
+
+          event.preventDefault();
 
           sendMessage();
 
@@ -306,12 +307,19 @@
     );
 
 
+    // RECEIVE MESSAGES
+
     onChildAdded(
       messagesRef,
       function(snapshot) {
 
         const message =
           snapshot.val();
+
+
+        if (!message) {
+          return;
+        }
 
 
         const messageElement =
@@ -327,9 +335,10 @@
 
           messageElement.className =
             "message received";
-
         }
 
+
+        // NAME
 
         const nameElement =
           document.createElement("div");
@@ -341,12 +350,16 @@
           message.name || "Guest";
 
 
+        // TEXT
+
         const textElement =
           document.createElement("div");
 
         textElement.textContent =
-          message.text;
+          message.text || "";
 
+
+        // TIME
 
         const timeElement =
           document.createElement("div");
@@ -362,12 +375,16 @@
 
           timeElement.textContent =
             date.toLocaleTimeString([], {
-              hour: "numeric",
-              minute: "2-digit"
-            });
 
+              hour: "numeric",
+
+              minute: "2-digit"
+
+            });
         }
 
+
+        // ADD EVERYTHING
 
         messageElement.appendChild(
           nameElement
@@ -387,6 +404,8 @@
         );
 
 
+        // SCROLL DOWN
+
         messagesDiv.scrollTop =
           messagesDiv.scrollHeight;
 
@@ -397,9 +416,3 @@
 
 </body>
 </html>
-
-
-    
-
-    
-      
