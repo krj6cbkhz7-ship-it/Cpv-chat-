@@ -489,9 +489,7 @@ imageInput.addEventListener(
 
         // TEXT
 
-        const textElement =
-          document.createElement("div");
-if (message.image) {
+        if (message.image) {
 
   const imageElement =
     document.createElement("img");
@@ -516,8 +514,45 @@ if (message.image) {
   );
 
 }
-        textElement.textContent =
-          message.text || "";
+        if (message.image) {
+
+  const imageElement =
+    document.createElement("img");
+
+  imageElement.src =
+    message.image;
+
+  imageElement.style.maxWidth =
+    "100%";
+
+  imageElement.style.borderRadius =
+    "12px";
+
+  imageElement.style.display =
+    "block";
+
+  imageElement.style.marginTop =
+    "5px";
+
+  messageElement.appendChild(
+    imageElement
+  );
+
+}
+
+if (message.text) {
+
+  const textElement =
+    document.createElement("div");
+
+  textElement.textContent =
+    message.text;
+
+  messageElement.appendChild(
+    textElement
+  );
+
+}
 
 
         // TIME
