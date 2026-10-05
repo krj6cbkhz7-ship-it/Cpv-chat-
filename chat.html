@@ -231,7 +231,34 @@
       document.getElementById("sendButton");
 
 
-    function sendMessage() {
+    async function sendMessage() {
+  const text = input.value.trim();
+
+  if (text === "") {
+    return;
+  }
+
+  if (!auth.currentUser) {
+    alert("Not connected to Firebase yet.");
+    return;
+  }
+
+  try {
+    await push(messagesRef, {
+      name: userName,
+      text: text,
+      timestamp: Date.now(),
+      userId: auth.currentUser.uid
+    });
+
+    input.value = "";
+    input.focus();
+
+  } catch (error) {
+    console.error(error);
+    alert("Message failed: " + error.message);
+  }
+}
 
       const text =
         input.value.trim();
