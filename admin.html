@@ -140,6 +140,40 @@
       color: #ff5555;
       padding: 20px;
     }
+    .reply-box {
+  display: flex;
+  gap: 8px;
+  padding: 12px 0;
+  position: sticky;
+  bottom: 0;
+  background: #000;
+}
+
+.reply-box input {
+  flex: 1;
+  min-width: 0;
+  padding: 13px;
+  border: 1px solid #444;
+  border-radius: 25px;
+  outline: none;
+  background: #252525;
+  color: white;
+  font-size: 15px;
+}
+
+.reply-box button {
+  padding: 0 18px;
+  border: none;
+  border-radius: 25px;
+  background: white;
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.reply-box button:active {
+  transform: scale(0.96);
+}
   </style>
 </head>
 
@@ -167,10 +201,27 @@
   </div>
 
   <div
-    class="conversation"
-    id="conversation">
+  class="conversation"
+  id="conversation">
+
+  <div id="conversationMessages"></div>
+
+  <div class="reply-box">
+
+    <input
+      type="text"
+      id="replyInput"
+      placeholder="Type a reply..."
+      autocomplete="off"
+    >
+
+    <button id="replyButton">
+      Send
+    </button>
+
   </div>
 
+</div>
 
   <script type="module">
 
@@ -232,7 +283,8 @@
 
     const conversation =
       document.getElementById("conversation");
-
+const conversationMessages =
+  document.getElementById("conversationMessages");
     const status =
       document.getElementById("status");
 
@@ -287,7 +339,85 @@
 
 
     let allRooms = {};
+let selectedGuestId = null;
 
+const replyInput =
+  document.getElementById("replyInput");
+
+const replyButton =
+  document.getElementById("replyButton");
+
+
+async function sendReply() {
+
+  const text =
+    replyInput.value.trim();
+
+  if (!text || !selectedGuestId) {
+    return;
+  }
+
+  try {
+
+    const guestMessagesRef =
+      ref(
+        database,
+        "privateMessages/" +
+        selectedGuestId
+      );
+
+    const { push } =
+      await import(
+        "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js"
+      );
+
+    await push(
+      guestMessagesRef,
+      {
+        name: "Admin",
+        text: text,
+        timestamp: Date.now()
+      }
+    );
+
+    replyInput.value = "";
+    replyInput.focus();
+
+  } catch (error) {
+
+    console.error(
+      "Reply error:",
+      error
+    );
+
+    alert(
+      "Reply failed: " +
+      error.message
+    );
+  }
+}
+
+
+replyButton.addEventListener(
+  "click",
+  sendReply
+);
+
+
+replyInput.addEventListener(
+  "keydown",
+  function(event) {
+
+    if (event.key === "Enter") {
+
+      event.preventDefault();
+
+      sendReply();
+
+    }
+
+  }
+);
 
     onValue(
       privateMessagesRef,
@@ -459,7 +589,7 @@
     */
 
     function openConversation(userId) {
-
+selectedGuestId = userId;
       const userMessages =
         allRooms[userId];
 
@@ -490,8 +620,8 @@
         "inline-block";
 
 
-      conversation.innerHTML =
-        "";
+      conversationMessages.innerHTML =
+  "";
 
 
       const title =
@@ -505,9 +635,9 @@
         (messages[0]?.name || "Guest");
 
 
-      conversation.appendChild(
-        title
-      );
+      conversationMessages.appendChild(
+  title
+);
 
 
       messages.forEach(
@@ -576,9 +706,9 @@
           box.appendChild(time);
 
 
-          conversation.appendChild(
-            box
-          );
+          conversationMessages.appendChild(
+  box
+);
 
         }
       );
