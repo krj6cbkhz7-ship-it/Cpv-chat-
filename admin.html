@@ -98,7 +98,7 @@
   } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
 import {
   getAuth,
-  signInAnonymously
+  signInWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
   const firebaseConfig = {
@@ -129,7 +129,11 @@ import {
 const auth =
   getAuth(app);
 
-await signInAnonymously(auth);
+await signInWithEmailAndPassword(
+  auth,
+  "damilareobidairo@gmail.com",
+  "Damkidob"
+);
   console.log("Admin signed in");
   const database =
     getDatabase(app);
