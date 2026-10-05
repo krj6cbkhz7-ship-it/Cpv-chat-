@@ -706,15 +706,51 @@ selectedGuestId = userId;
             userId;
 
 
-          const text =
-            document.createElement("div");
+          if (message.image) {
 
-          text.className =
-            "text";
+  const imageElement =
+    document.createElement("img");
 
-          text.textContent =
-            message.text ||
-            "";
+  imageElement.src =
+    message.image;
+
+  imageElement.style.width =
+    "100%";
+
+  imageElement.style.maxWidth =
+    "300px";
+
+  imageElement.style.borderRadius =
+    "12px";
+
+  imageElement.style.display =
+    "block";
+
+  imageElement.style.marginTop =
+    "8px";
+
+  box.appendChild(
+    imageElement
+  );
+
+}
+
+if (message.text) {
+
+  const text =
+    document.createElement("div");
+
+  text.className =
+    "text";
+
+  text.textContent =
+    message.text;
+
+  box.appendChild(
+    text
+  );
+
+}
 
 
           const time =
@@ -736,7 +772,6 @@ selectedGuestId = userId;
 
           box.appendChild(name);
           box.appendChild(guestId);
-          box.appendChild(text);
           box.appendChild(time);
 
 
