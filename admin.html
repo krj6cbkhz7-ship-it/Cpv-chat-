@@ -85,12 +85,17 @@
       margin-top: 5px;
     }
 
-    .conversation {
-      display: none;
-      max-width: 600px;
-      margin: auto;
-      padding: 18px;
-    }
+   .conversation {
+  display: none;
+  max-width: 600px;
+  margin: auto;
+  padding: 18px;
+}
+
+#conversationMessages {
+  display: flex;
+  flex-direction: column;
+}
 
     .conversation-title {
       padding: 12px 0;
@@ -99,13 +104,25 @@
       color: #ff3333;
     }
 
-    .message {
-      background: #191919;
-      border: 1px solid #333;
-      border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 12px;
-    }
+  .message {
+  max-width: 80%;
+  background: #191919;
+  border: 1px solid #333;
+  border-radius: 14px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  align-self: flex-start;
+}
+
+.admin-message {
+  margin-left: auto;
+  background: #d00000;
+  border-color: #d00000;
+}
+
+.guest-message {
+  margin-right: auto;
+}
 
     .name {
       color: #ff3333;
@@ -647,7 +664,9 @@ selectedGuestId = userId;
             document.createElement("div");
 
           box.className =
-            "message";
+  message.name === "Admin"
+    ? "message admin-message"
+    : "message guest-message";
 
 
           const name =
