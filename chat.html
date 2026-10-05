@@ -74,6 +74,13 @@
       opacity: 0.7;
     }
 
+    .message-time {
+      font-size: 10px;
+      opacity: 0.6;
+      margin-top: 5px;
+      text-align: right;
+    }
+
     .sent {
       align-self: flex-end;
       background: #d00000;
@@ -124,7 +131,7 @@
 
     <div class="chat-header">
       <h2>💬 CPV PRIVATE CHAT</h2>
-      <div class="status">● Connected</div>
+      <div class="status">● Online</div>
     </div>
 
     <div class="messages" id="messages"></div>
@@ -141,7 +148,6 @@
     </div>
 
   </div>
-
 
   <script type="module">
 
@@ -176,6 +182,7 @@
         "1:916226104692:web:27be19c8a22df397bd6021",
 
       measurementId: "G-SYWN64JMNH"
+
     };
 
 
@@ -183,7 +190,8 @@
 
     const database = getDatabase(app);
 
-    const messagesRef = ref(database, "messages");
+    const messagesRef =
+      ref(database, "messages");
 
 
     let userName =
@@ -195,16 +203,21 @@
       userName =
         prompt("Enter your name:");
 
-      if (!userName || userName.trim() === "") {
+      if (!userName ||
+          userName.trim() === "") {
+
         userName = "Guest";
+
       }
 
-      userName = userName.trim();
+      userName =
+        userName.trim();
 
       localStorage.setItem(
         "cpvChatName",
         userName
       );
+
     }
 
 
@@ -220,11 +233,13 @@
 
     function sendMessage() {
 
-      const text = input.value.trim();
+      const text =
+        input.value.trim();
 
       if (text === "") {
         return;
       }
+
 
       push(messagesRef, {
 
@@ -236,9 +251,11 @@
 
       });
 
+
       input.value = "";
 
       input.focus();
+
     }
 
 
@@ -253,7 +270,9 @@
       function(event) {
 
         if (event.key === "Enter") {
+
           sendMessage();
+
         }
 
       }
@@ -264,7 +283,9 @@
       messagesRef,
       function(snapshot) {
 
-        const message = snapshot.val();
+        const message =
+          snapshot.val();
+
 
         const messageElement =
           document.createElement("div");
@@ -300,12 +321,37 @@
           message.text;
 
 
+        const timeElement =
+          document.createElement("div");
+
+        timeElement.className =
+          "message-time";
+
+
+        if (message.timestamp) {
+
+          const date =
+            new Date(message.timestamp);
+
+          timeElement.textContent =
+            date.toLocaleTimeString([], {
+              hour: "numeric",
+              minute: "2-digit"
+            });
+
+        }
+
+
         messageElement.appendChild(
           nameElement
         );
 
         messageElement.appendChild(
           textElement
+        );
+
+        messageElement.appendChild(
+          timeElement
         );
 
 
@@ -324,3 +370,9 @@
 
 </body>
 </html>
+
+
+    
+
+    
+      
