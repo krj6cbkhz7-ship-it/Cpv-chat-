@@ -925,7 +925,18 @@ if (message.text) {
 
       }
     );
+if ("Notification" in window) {
 
+  const permission =
+    await Notification.requestPermission();
+
+  if (permission === "granted") {
+    console.log("Notifications enabled");
+  } else {
+    console.log("Notifications not allowed");
+  }
+
+}
   </script>
 
 </body>
