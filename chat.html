@@ -140,17 +140,35 @@
 
     <div class="messages" id="messages"></div>
 
-    <div class="chat-input">
-      <input
-        type="text"
-        id="messageInput"
-        placeholder="Type a message..."
-        autocomplete="off"
-      >
+<div class="chat-input">
 
-      <button id="sendButton">Send</button>
-    </div>
+  <input
+    type="file"
+    id="imageInput"
+    accept="image/*"
+    hidden
+  >
 
+  <button
+    id="imageButton"
+    type="button">
+    📷
+  </button>
+
+  <input
+    type="text"
+    id="messageInput"
+    placeholder="Type a message..."
+    autocomplete="off"
+  >
+
+  <button
+    id="sendButton"
+    type="button">
+    Send
+  </button>
+
+</div>
   </div>
 
   <script type="module">
@@ -243,7 +261,18 @@ const messagesRef =
 
     const sendButton =
       document.getElementById("sendButton");
+const imageInput =
+  document.getElementById("imageInput");
 
+const imageButton =
+  document.getElementById("imageButton");
+
+imageButton.addEventListener(
+  "click",
+  function() {
+    imageInput.click();
+  }
+);
 
     // SEND MESSAGE
 
