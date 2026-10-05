@@ -521,31 +521,7 @@ imageInput.addEventListener(
   );
 
 }
-        if (message.image) {
-
-  const imageElement =
-    document.createElement("img");
-
-  imageElement.src =
-    message.image;
-
-  imageElement.style.maxWidth =
-    "100%";
-
-  imageElement.style.borderRadius =
-    "12px";
-
-  imageElement.style.display =
-    "block";
-
-  imageElement.style.marginTop =
-    "5px";
-
-  messageElement.appendChild(
-    imageElement
-  );
-
-}
+       
 
 if (message.text) {
 
@@ -588,32 +564,28 @@ if (message.text) {
 
 
         // ADD EVERYTHING
+messageElement.appendChild(
+  nameElement
+);
 
-        messageElement.appendChild(
-          nameElement
-        );
-
-        messageElement.appendChild(
-          textElement
-        );
-
-        messageElement.appendChild(
-          timeElement
-        );
+messageElement.appendChild(
+  timeElement
+);
 
 
-        messagesDiv.appendChild(
-          messageElement
-        );
+messagesDiv.appendChild(
+  messageElement
+);
 
 
-        // SCROLL DOWN
+// SCROLL DOWN
 
-        messagesDiv.scrollTop =
-          messagesDiv.scrollHeight;
+messagesDiv.scrollTop =
+  messagesDiv.scrollHeight;
 
-      }
-    );
+}
+);
+        
 
   </script>
 
