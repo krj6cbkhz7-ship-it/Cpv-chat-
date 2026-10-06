@@ -580,15 +580,23 @@ replyInput.addEventListener(
 );
 
     onValue(
-      privateMessagesRef,
-      function(snapshot) {
+  privateMessagesRef,
+  function(snapshot) {
 
-        allRooms =
-          snapshot.val() || {};
+    allRooms =
+      snapshot.val() || {};
 
-        showInbox();
+    if (
+      selectedGuestId &&
+      conversation.style.display === "block"
+    ) {
+      openConversation(selectedGuestId);
+    } else {
+      showInbox();
+    }
 
-      },
+  },
+);
       function(error) {
 
         console.error(
