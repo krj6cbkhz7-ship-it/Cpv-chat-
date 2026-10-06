@@ -3,11 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>CPV PRIVATE CHAT</title>
+
   <style>
     * {
       box-sizing: border-box;
     }
+
     body {
       margin: 0;
       min-height: 100vh;
@@ -18,6 +21,7 @@
       justify-content: center;
       align-items: center;
     }
+
     .chat-container {
       width: 100%;
       max-width: 430px;
@@ -28,22 +32,26 @@
       flex-direction: column;
       overflow: hidden;
     }
+
     .chat-header {
       padding: 18px;
       text-align: center;
       background: #181818;
       border-bottom: 1px solid #333;
     }
+
     .chat-header h2 {
       margin: 0;
       color: red;
       letter-spacing: 1px;
     }
+
     .status {
       margin-top: 6px;
       color: #4ade80;
       font-size: 13px;
     }
+
     .messages {
       flex: 1;
       padding: 18px;
@@ -52,6 +60,7 @@
       flex-direction: column;
       gap: 12px;
     }
+
     .message {
       max-width: 80%;
       padding: 10px 14px;
@@ -59,27 +68,32 @@
       line-height: 1.4;
       word-wrap: break-word;
     }
+
     .sender-name {
       font-size: 11px;
       margin-bottom: 4px;
       opacity: 0.7;
     }
+
     .message-time {
       font-size: 10px;
       opacity: 0.6;
       margin-top: 5px;
       text-align: right;
     }
+
     .sent {
       align-self: flex-end;
       background: #d00000;
       border-bottom-right-radius: 4px;
     }
+
     .received {
       align-self: flex-start;
       background: #292929;
       border-bottom-left-radius: 4px;
     }
+
     .chat-input {
       display: flex;
       gap: 8px;
@@ -87,6 +101,7 @@
       background: #181818;
       border-top: 1px solid #333;
     }
+
     .chat-input input {
       flex: 1;
       min-width: 0;
@@ -98,6 +113,7 @@
       color: white;
       font-size: 15px;
     }
+
     .chat-input button {
       padding: 0 18px;
       border: none;
@@ -107,281 +123,192 @@
       font-weight: bold;
       cursor: pointer;
     }
+
     .chat-input button:active {
       transform: scale(0.96);
     }
   </style>
 </head>
+
 <body>
+
+  <!-- CHAT -->
+
   <div class="chat-container">
-<div class="chat-header">
-  <h2>💬 CPV PRIVATE CHAT</h2>
-  <div class="status">● Online</div>
-</div>
-<div class="messages" id="messages"></div>
-<div class="chat-input">
-  <input
-    type="file"
-    id="imageInput"
-    accept="image/*"
-    hidden
-  >
-  <button
-    id="imageButton"
-    type="button">
-    📷
-  </button>
-  <input
-    type="text"
-    id="messageInput"
-    placeholder="Type a message..."
-    autocomplete="off"
-  >
-  <button
-    id="sendButton"
-    type="button">
-    Send
-  </button>
-</div>
+
+    <!-- HEADER -->
+
+    <div class="chat-header">
+      <h2>💬 CPV PRIVATE CHAT</h2>
+      <div class="status">● Online</div>
+    </div>
+
+
+    <!-- MESSAGES -->
+
+    <div
+      class="messages"
+      id="messages">
+    </div>
+
+
+    <!-- INPUT -->
+
+    <div class="chat-input">
+
+      <input
+        type="file"
+        id="imageInput"
+        accept="image/*"
+        hidden
+      >
+
+      <button
+        id="imageButton"
+        type="button">
+        📷
+      </button>
+
+      <input
+        type="text"
+        id="messageInput"
+        placeholder="Type a message..."
+        autocomplete="off"
+      >
+
+      <button
+        id="sendButton"
+        type="button">
+        Send
+      </button>
+
+    </div>
+
   </div>
+
+
+  <!-- FIREBASE -->
+
   <script type="module">
+
     import { initializeApp }
       from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+
     import {
       getDatabase,
       ref,
       push,
       onValue
-    } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
+    }
+      from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
+
     import {
       getAuth,
       signInAnonymously
-    } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+    }
+      from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+
+
     // FIREBASE CONFIG
+
     const firebaseConfig = {
-      apiKey: "AIzaSyDOUfBgQbjhOy025v0CZ4vwnYG6Y2wYBU",
-      authDomain: "cpv-private-chat.firebaseapp.com",
+
+      apiKey:
+        "AIzaSyDOUfBgQbjhOy025v0CZ4vwnYG6Y2wYBU",
+
+      authDomain:
+        "cpv-private-chat.firebaseapp.com",
+
       databaseURL:
         "https://cpv-private-chat-default-rtdb.firebaseio.com/",
-      projectId: "cpv-private-chat",
+
+      projectId:
+        "cpv-private-chat",
+
       storageBucket:
         "cpv-private-chat.firebasestorage.app",
-      messagingSenderId: "916226104692",
+
+      messagingSenderId:
+        "916226104692",
+
       appId:
         "1:916226104692:web:27be19c8a22df397bd6021",
-      measurementId: "G-SYWN64JMNH"
+
+      measurementId:
+        "G-SYWN64JMNH"
     };
+
+
     // START FIREBASE
+
     const app =
       initializeApp(firebaseConfig);
+
     const auth =
       getAuth(app);
-    await signInAnonymously(auth);
+
     const database =
       getDatabase(app);
-    const userId =
-      auth.currentUser.uid;
-    const messagesRef =
-      ref(
-        database,
-        "privateMessages/" + userId
-      );
-    // GET USER NAME
+
+
+    // HTML ELEMENTS
+
+    const messagesDiv =
+      document.getElementById("messages");
+
+    const input =
+      document.getElementById("messageInput");
+
+    const sendButton =
+      document.getElementById("sendButton");
+
+    const imageInput =
+      document.getElementById("imageInput");
+
+    const imageButton =
+      document.getElementById("imageButton");
+
+
+    // USER NAME
+
     let userName =
-      localStorage.getItem(
-        "cpvChatName"
-      );
+      localStorage.getItem("cpvChatName");
+
     if (!userName) {
+
       userName =
         prompt("Enter your name:");
+
       if (
         !userName ||
         userName.trim() === ""
       ) {
         userName = "Guest";
       }
+
       userName =
         userName.trim();
+
       localStorage.setItem(
         "cpvChatName",
         userName
       );
     }
-    // AUTOMATIC FIRST MESSAGE
-    const autoMessageKey =
-      "cpv_auto_message_sent_" + userId;
-    if (
-      !localStorage.getItem(
-        autoMessageKey
-      )
-    ) {
-      await push(
-        messagesRef,
-        {
-          name: userName,
-          text:
-            "Hello I want to get my membership activation code",
-          timestamp: Date.now()
-        }
-      );
-      localStorage.setItem(
-        autoMessageKey,
-        "true"
-      );
-    }
-    // GET HTML ELEMENTS
-    const messagesDiv =
-      document.getElementById(
-        "messages"
-      );
-    const input =
-      document.getElementById(
-        "messageInput"
-      );
-    const sendButton =
-      document.getElementById(
-        "sendButton"
-      );
-    // ACTIVATION LINK MESSAGE
-    const urlParams =
-      new URLSearchParams(
-        window.location.search
-      );
-    if (
-      urlParams.get("activation") === "1"
-    ) {
-      input.value =
-        "Hello, I want to get my membership activation code.";
-    }
-    // IMAGE ELEMENTS
-    const imageInput =
-      document.getElementById(
-        "imageInput"
-      );
-    const imageButton =
-      document.getElementById(
-        "imageButton"
-      );
-    // IMAGE BUTTON
-    imageButton.addEventListener(
-      "click",
-      function() {
-        imageInput.click();
-      }
-    );
-    // IMAGE SEND
-    imageInput.addEventListener(
-      "change",
-      function() {
-        const file =
-          imageInput.files[0];
-        if (!file) {
-          return;
-        }
-        if (
-          !file.type.startsWith(
-            "image/"
-          )
-        ) {
-          alert(
-            "Please select a picture."
-          );
-          return;
-        }
-        const reader =
-          new FileReader();
-        reader.onload =
-          function(event) {
-            const image =
-              new Image();
-            image.onload =
-              async function() {
-                const canvas =
-                  document.createElement(
-                    "canvas"
-                  );
-                const maxWidth = 900;
-                const maxHeight = 900;
-                let width =
-                  image.width;
-                let height =
-                  image.height;
-                if (
-                  width > maxWidth
-                ) {
-                  height =
-                    height *
-                    (maxWidth / width);
-                  width =
-                    maxWidth;
-                }
-                if (
-                  height > maxHeight
-                ) {
-                  width =
-                    width *
-                    (maxHeight / height);
-                  height =
-                    maxHeight;
-                }
-                canvas.width =
-                  width;
-                canvas.height =
-                  height;
-                const ctx =
-                  canvas.getContext(
-                    "2d"
-                  );
-                ctx.drawImage(
-                  image,
-                  0,
-                  0,
-                  width,
-                  height
-                );
-                const imageData =
-                  canvas.toDataURL(
-                    "image/jpeg",
-                    0.7
-                  );
-                try {
-                  await push(
-                    messagesRef,
-                    {
-                      name: userName,
-                      image: imageData,
-                      timestamp: Date.now()
-                    }
-                  );
-                  imageInput.value =
-                    "";
-                } catch (error) {
-                  console.error(
-                    "Image send error:",
-                    error
-                  );
-                  alert(
-                    "Picture failed: " +
-                    error.message
-                  );
-                }
-              };
-            image.src =
-              event.target.result;
-          };
-        reader.readAsDataURL(
-          file
-        );
-      }
-    );
+
+
     // SEND MESSAGE
+
     async function sendMessage() {
+
       const text =
         input.value.trim();
+
       if (text === "") {
         return;
       }
+
       try {
+
         await push(
           messagesRef,
           {
@@ -390,150 +317,442 @@
             timestamp: Date.now()
           }
         );
+
         input.value = "";
+
         input.focus();
+
       } catch (error) {
+
         console.error(
-          "Firebase error:",
+          "Firebase send error:",
           error
         );
+
         alert(
           "Message failed: " +
           error.message
         );
       }
     }
-    // SEND BUTTON
-    sendButton.addEventListener(
-      "click",
-      sendMessage
-    );
-    // ENTER KEY
-    input.addEventListener(
-      "keydown",
-      function(event) {
-        if (
-          event.key === "Enter"
-        ) {
-          event.preventDefault();
-          sendMessage();
-        }
-      }
-    );
-    // RECEIVE MESSAGES
-    onValue(
-      messagesRef,
-      function(snapshot) {
-        messagesDiv.innerHTML =
-          "";
-        const data =
-          snapshot.val();
-        if (!data) {
-          return;
-        }
-        const messages =
-          Object.values(data)
-            .filter(
-              message => message
-            )
-            .sort(
-              (a, b) =>
-                (a.timestamp || 0) -
-                (b.timestamp || 0)
-            );
-        messages.forEach(
-          function(message) {
-            const messageElement =
-              document.createElement(
-                "div"
-              );
-            if (
-              message.name === userName
-            ) {
-              messageElement.className =
-                "message sent";
-            } else {
-              messageElement.className =
-                "message received";
-            }
-            // SENDER NAME
-            const nameElement =
-              document.createElement(
-                "div"
-              );
-            nameElement.className =
-              "sender-name";
-            nameElement.textContent =
-              message.name ||
-              "Guest";
-            messageElement.appendChild(
-              nameElement
-            );
-            // IMAGE
-            if (message.image) {
-              const imageElement =
-                document.createElement(
-                  "img"
-                );
-              imageElement.src =
-                message.image;
-              imageElement.style.maxWidth =
-                "100%";
-              imageElement.style.borderRadius =
-                "12px";
-              imageElement.style.display =
-                "block";
-              imageElement.style.marginTop =
-                "5px";
-              messageElement.appendChild(
-                imageElement
-              );
-            }
-            // TEXT
-            if (message.text) {
-              const textElement =
-                document.createElement(
-                  "div"
-                );
-              textElement.textContent =
-                message.text;
-              messageElement.appendChild(
-                textElement
-              );
-            }
-            // TIME
-            const timeElement =
-              document.createElement(
-                "div"
-              );
-            timeElement.className =
-              "message-time";
-            if (message.timestamp) {
-              const date =
-                new Date(
-                  message.timestamp
-                );
-              timeElement.textContent =
-                date.toLocaleTimeString(
-                  [],
-                  {
-                    hour: "numeric",
-                    minute: "2-digit"
-                  }
-                );
-            }
-            messageElement.appendChild(
-              timeElement
-            );
-            messagesDiv.appendChild(
-              messageElement
-            );
-          }
+
+
+    // START CHAT AFTER LOGIN
+
+    let messagesRef;
+
+
+    try {
+
+      await signInAnonymously(auth);
+
+      const userId =
+        auth.currentUser.uid;
+
+      messagesRef =
+        ref(
+          database,
+          "privateMessages/" + userId
         );
-        messagesDiv.scrollTop =
-          messagesDiv.scrollHeight;
+
+
+      // AUTOMATIC FIRST MESSAGE
+
+      const autoMessageKey =
+        "cpv_auto_message_sent_" + userId;
+
+      if (
+        !localStorage.getItem(
+          autoMessageKey
+        )
+      ) {
+
+        try {
+
+          await push(
+            messagesRef,
+            {
+              name: userName,
+
+              text:
+                "Hello I want to get my membership activation code",
+
+              timestamp: Date.now()
+            }
+          );
+
+          localStorage.setItem(
+            autoMessageKey,
+            "true"
+          );
+
+        } catch (error) {
+
+          console.error(
+            "Automatic message error:",
+            error
+          );
+
+        }
       }
-    );
+
+
+      // ACTIVATION LINK
+
+      const urlParams =
+        new URLSearchParams(
+          window.location.search
+        );
+
+      if (
+        urlParams.get("activation") === "1"
+      ) {
+
+        input.value =
+          "Hello, I want to get my membership activation code.";
+      }
+
+
+      // SEND BUTTON
+
+      sendButton.addEventListener(
+        "click",
+        sendMessage
+      );
+
+
+      // ENTER KEY
+
+      input.addEventListener(
+        "keydown",
+        function(event) {
+
+          if (
+            event.key === "Enter"
+          ) {
+
+            event.preventDefault();
+
+            sendMessage();
+          }
+        }
+      );
+
+
+      // IMAGE BUTTON
+
+      imageButton.addEventListener(
+        "click",
+        function() {
+
+          imageInput.click();
+
+        }
+      );
+
+
+      // IMAGE SEND
+
+      imageInput.addEventListener(
+        "change",
+        function() {
+
+          const file =
+            imageInput.files[0];
+
+          if (!file) {
+            return;
+          }
+
+          const reader =
+            new FileReader();
+
+          reader.onload =
+            function(event) {
+
+              const image =
+                new Image();
+
+              image.onload =
+                async function() {
+
+                  const canvas =
+                    document.createElement(
+                      "canvas"
+                    );
+
+                  const maxWidth = 900;
+                  const maxHeight = 900;
+
+                  let width =
+                    image.width;
+
+                  let height =
+                    image.height;
+
+
+                  if (
+                    width > maxWidth
+                  ) {
+
+                    height =
+                      height *
+                      (maxWidth / width);
+
+                    width =
+                      maxWidth;
+                  }
+
+
+                  if (
+                    height > maxHeight
+                  ) {
+
+                    width =
+                      width *
+                      (maxHeight / height);
+
+                    height =
+                      maxHeight;
+                  }
+
+
+                  canvas.width =
+                    width;
+
+                  canvas.height =
+                    height;
+
+
+                  const ctx =
+                    canvas.getContext("2d");
+
+                  ctx.drawImage(
+                    image,
+                    0,
+                    0,
+                    width,
+                    height
+                  );
+
+
+                  const imageData =
+                    canvas.toDataURL(
+                      "image/jpeg",
+                      0.7
+                    );
+
+
+                  try {
+
+                    await push(
+                      messagesRef,
+                      {
+                        name: userName,
+                        image: imageData,
+                        timestamp: Date.now()
+                      }
+                    );
+
+                    imageInput.value = "";
+
+                  } catch (error) {
+
+                    console.error(
+                      "Image send error:",
+                      error
+                    );
+
+                    alert(
+                      "Picture failed: " +
+                      error.message
+                    );
+                  }
+
+                };
+
+
+              image.src =
+                event.target.result;
+
+            };
+
+
+          reader.readAsDataURL(file);
+
+        }
+      );
+
+
+      // RECEIVE MESSAGES
+
+      onValue(
+        messagesRef,
+        function(snapshot) {
+
+          messagesDiv.innerHTML = "";
+
+          const data =
+            snapshot.val();
+
+          if (!data) {
+            return;
+          }
+
+
+          const messages =
+            Object.values(data)
+              .filter(
+                message => message
+              )
+              .sort(
+                (a, b) =>
+                  (a.timestamp || 0) -
+                  (b.timestamp || 0)
+              );
+
+
+          messages.forEach(
+            function(message) {
+
+              const messageElement =
+                document.createElement("div");
+
+
+              if (
+                message.name === userName
+              ) {
+
+                messageElement.className =
+                  "message sent";
+
+              } else {
+
+                messageElement.className =
+                  "message received";
+              }
+
+
+              // NAME
+
+              const nameElement =
+                document.createElement("div");
+
+              nameElement.className =
+                "sender-name";
+
+              nameElement.textContent =
+                message.name || "Guest";
+
+              messageElement.appendChild(
+                nameElement
+              );
+
+
+              // IMAGE
+
+              if (message.image) {
+
+                const imageElement =
+                  document.createElement("img");
+
+                imageElement.src =
+                  message.image;
+
+                imageElement.style.maxWidth =
+                  "100%";
+
+                imageElement.style.borderRadius =
+                  "12px";
+
+                imageElement.style.display =
+                  "block";
+
+                imageElement.style.marginTop =
+                  "5px";
+
+                messageElement.appendChild(
+                  imageElement
+                );
+              }
+
+
+              // TEXT
+
+              if (message.text) {
+
+                const textElement =
+                  document.createElement("div");
+
+                textElement.textContent =
+                  message.text;
+
+                messageElement.appendChild(
+                  textElement
+                );
+              }
+
+
+              // TIME
+
+              const timeElement =
+                document.createElement("div");
+
+              timeElement.className =
+                "message-time";
+
+
+              if (message.timestamp) {
+
+                const date =
+                  new Date(
+                    message.timestamp
+                  );
+
+                timeElement.textContent =
+                  date.toLocaleTimeString(
+                    [],
+                    {
+                      hour: "numeric",
+                      minute: "2-digit"
+                    }
+                  );
+              }
+
+
+              messageElement.appendChild(
+                timeElement
+              );
+
+              messagesDiv.appendChild(
+                messageElement
+              );
+
+            }
+          );
+
+
+          messagesDiv.scrollTop =
+            messagesDiv.scrollHeight;
+
+        }
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "Chat startup error:",
+        error
+      );
+
+      alert(
+        "Chat connection failed: " +
+        error.message
+      );
+    }
+
   </script>
+
 </body>
 </html>
