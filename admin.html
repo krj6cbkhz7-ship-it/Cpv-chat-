@@ -586,11 +586,7 @@ replyInput.addEventListener(
     allRooms =
       snapshot.val() || {};
 
-    if (selectedGuestId) {
-      openConversation(selectedGuestId);
-    } else {
-      showInbox();
-    }
+    showInbox();
 
   },
 );
