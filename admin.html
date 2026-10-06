@@ -37,6 +37,33 @@
       font-size: 13px;
     }
 
+    .login {
+      max-width: 400px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+
+    .login input {
+      width: 100%;
+      padding: 13px;
+      margin-bottom: 10px;
+      border: 1px solid #444;
+      border-radius: 8px;
+      background: #222;
+      color: white;
+      font-size: 15px;
+    }
+
+    .login button {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 8px;
+      background: white;
+      color: black;
+      font-weight: bold;
+    }
+
     .back {
       display: none;
       margin-top: 12px;
@@ -46,7 +73,6 @@
       background: white;
       color: black;
       font-weight: bold;
-      cursor: pointer;
     }
 
     .inbox {
@@ -85,17 +111,17 @@
       margin-top: 5px;
     }
 
-   .conversation {
-  display: none;
-  max-width: 600px;
-  margin: auto;
-  padding: 18px;
-}
+    .conversation {
+      display: none;
+      max-width: 600px;
+      margin: auto;
+      padding: 18px;
+    }
 
-#conversationMessages {
-  display: flex;
-  flex-direction: column;
-}
+    #conversationMessages {
+      display: flex;
+      flex-direction: column;
+    }
 
     .conversation-title {
       padding: 12px 0;
@@ -104,29 +130,33 @@
       color: #ff3333;
     }
 
-  .message {
-  max-width: 80%;
-  background: #191919;
-  border: 1px solid #333;
-  border-radius: 14px;
-  padding: 10px 14px;
-  margin-bottom: 10px;
-  align-self: flex-start;
-}
+    .message {
+      max-width: 80%;
+      background: #191919;
+      border: 1px solid #333;
+      border-radius: 14px;
+      padding: 10px 14px;
+      margin-bottom: 10px;
+      align-self: flex-start;
+    }
 
-.admin-message {
-  margin-left: auto;
-  background: #d00000;
-  border-color: #d00000;
-}
+    .admin-message {
+      margin-left: auto;
+      background: #d00000;
+      border-color: #d00000;
+    }
 
-.guest-message {
-  margin-right: auto;
-}
+    .guest-message {
+      margin-right: auto;
+    }
 
     .name {
       color: #ff3333;
       font-weight: bold;
+    }
+
+    .admin-message .name {
+      color: white;
     }
 
     .guest-id {
@@ -157,40 +187,47 @@
       color: #ff5555;
       padding: 20px;
     }
+
     .reply-box {
-  display: flex;
-  gap: 8px;
-  padding: 12px 0;
-  position: sticky;
-  bottom: 0;
-  background: #000;
-}
+      display: flex;
+      gap: 8px;
+      padding: 12px 0;
+      position: sticky;
+      bottom: 0;
+      background: #000;
+    }
 
-.reply-box input {
-  flex: 1;
-  min-width: 0;
-  padding: 13px;
-  border: 1px solid #444;
-  border-radius: 25px;
-  outline: none;
-  background: #252525;
-  color: white;
-  font-size: 15px;
-}
+    .reply-box input[type="text"] {
+      flex: 1;
+      min-width: 0;
+      padding: 13px;
+      border: 1px solid #444;
+      border-radius: 25px;
+      outline: none;
+      background: #252525;
+      color: white;
+      font-size: 15px;
+    }
 
-.reply-box button {
-  padding: 0 18px;
-  border: none;
-  border-radius: 25px;
-  background: white;
-  color: black;
-  font-weight: bold;
-  cursor: pointer;
-}
+    .reply-box button {
+      padding: 0 18px;
+      border: none;
+      border-radius: 25px;
+      background: white;
+      color: black;
+      font-weight: bold;
+    }
 
-.reply-box button:active {
-  transform: scale(0.96);
-}
+    .image-button {
+      width: 48px;
+      padding: 0 !important;
+    }
+
+    .login-error {
+      color: #ff5555;
+      margin-top: 10px;
+      font-size: 13px;
+    }
   </style>
 </head>
 
@@ -212,58 +249,91 @@
 
   </div>
 
+
   <div
-    class="inbox"
-    id="inbox">
+    class="login"
+    id="loginBox">
+
+    <input
+      type="email"
+      id="emailInput"
+      placeholder="Admin email"
+      autocomplete="username">
+
+    <input
+      type="password"
+      id="passwordInput"
+      placeholder="Admin password"
+      autocomplete="current-password">
+
+    <button id="loginButton">
+      Login
+    </button>
+
+    <div
+      class="login-error"
+      id="loginError">
+    </div>
+
   </div>
 
+
   <div
-  class="conversation"
-  id="conversation">
+    class="inbox"
+    id="inbox"
+    style="display:none;">
+  </div>
 
-  <div id="conversationMessages"></div>
 
-  <div class="reply-box">
+  <div
+    class="conversation"
+    id="conversation">
 
-  <input
-    type="file"
-    id="imageInput"
-    accept="image/*"
-    style="display:none"
-  >
+    <div id="conversationMessages"></div>
 
-  <button
-    id="imageButton"
-    type="button">
-    📷
-  </button>
+    <div class="reply-box">
 
-  <input
-    type="text"
-    id="replyInput"
-    placeholder="Type a reply..."
-    autocomplete="off"
-  >
+      <input
+        type="file"
+        id="imageInput"
+        accept="image/*"
+        style="display:none;">
 
-  <button
-    id="replyButton"
-    type="button">
-    Send
-  </button>
+      <button
+        id="imageButton"
+        class="image-button"
+        type="button">
+        📷
+      </button>
 
-</div>
+      <input
+        type="text"
+        id="replyInput"
+        placeholder="Type a reply..."
+        autocomplete="off">
 
-</div>
+      <button
+        id="replyButton"
+        type="button">
+        Send
+      </button>
+
+    </div>
+
+  </div>
+
 
   <script type="module">
 
-    import { initializeApp }
-      from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+    import {
+      initializeApp
+    } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 
     import {
       getDatabase,
       ref,
-      onValue
+      onValue,
+      push
     } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
 
     import {
@@ -310,58 +380,50 @@
       getDatabase(app);
 
 
+    const status =
+      document.getElementById("status");
+
+    const loginBox =
+      document.getElementById("loginBox");
+
+    const loginButton =
+      document.getElementById("loginButton");
+
+    const emailInput =
+      document.getElementById("emailInput");
+
+    const passwordInput =
+      document.getElementById("passwordInput");
+
+    const loginError =
+      document.getElementById("loginError");
+
     const inbox =
       document.getElementById("inbox");
 
     const conversation =
       document.getElementById("conversation");
-const conversationMessages =
-  document.getElementById("conversationMessages");
-    const status =
-      document.getElementById("status");
+
+    const conversationMessages =
+      document.getElementById(
+        "conversationMessages"
+      );
 
     const backButton =
       document.getElementById("backButton");
 
+    const replyInput =
+      document.getElementById("replyInput");
 
-    /*
-      ADMIN LOGIN
-    */
+    const replyButton =
+      document.getElementById("replyButton");
 
-    try {
+    const imageInput =
+      document.getElementById("imageInput");
 
-      await signInWithEmailAndPassword(
-        auth,
-        "damilareobidairo@gmail.com",
-        "Damkidob"
-      );
+    const imageButton =
+      document.getElementById("imageButton");
 
-      status.textContent =
-        "● Admin online";
-
-    } catch (error) {
-
-      console.error(
-        "Admin login error:",
-        error
-      );
-
-      status.textContent =
-        "● Admin login failed";
-
-      inbox.innerHTML =
-        "<div class='error'>" +
-        "ADMIN ERROR: " +
-        error.message +
-        "</div>";
-
-      throw error;
-    }
-
-
-    /*
-      READ ALL GUEST ROOMS
-    */
 
     const privateMessagesRef =
       ref(
@@ -371,245 +433,132 @@ const conversationMessages =
 
 
     let allRooms = {};
-let selectedGuestId = null;
 
-const replyInput =
-  document.getElementById("replyInput");
+    let selectedGuestId = null;
 
-const replyButton =
-  document.getElementById("replyButton");
-const imageInput =
-  document.getElementById("imageInput");
-
-const imageButton =
-  document.getElementById("imageButton");
-
-imageButton.addEventListener(
-  "click",
-  function() {
-    imageInput.click();
-  }
-);
-
-async function sendReply() {
-
-  const text =
-    replyInput.value.trim();
-
-  if (!text || !selectedGuestId) {
-    return;
-  }
-
-  try {
-
-    const guestMessagesRef =
-      ref(
-        database,
-        "privateMessages/" +
-        selectedGuestId
-      );
-
-    const { push } =
-      await import(
-        "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js"
-      );
-
-    await push(
-      guestMessagesRef,
-      {
-        name: "Admin",
-        text: text,
-        timestamp: Date.now()
-      }
-    );
-
-    replyInput.value = "";
-    replyInput.focus();
-
-  } catch (error) {
-
-    console.error(
-      "Reply error:",
-      error
-    );
-
-    alert(
-      "Reply failed: " +
-      error.message
-    );
-  }
-}
+    let adminLoggedIn = false;
 
 
-replyButton.addEventListener(
-  "click",
-  sendReply
-);
-imageInput.addEventListener(
-  "change",
-  function() {
+    /*
+      ADMIN LOGIN
+    */
 
-    const file = imageInput.files[0];
+    loginButton.addEventListener(
+      "click",
+      async function() {
 
-    if (!file) {
-      return;
-    }
+        const email =
+          emailInput.value.trim();
 
-    if (!file.type.startsWith("image/")) {
-      alert("Please select a picture.");
-      return;
-    }
+        const password =
+          passwordInput.value;
 
-    if (!selectedGuestId) {
-      alert("Please open a guest conversation first.");
-      imageInput.value = "";
-      return;
-    }
+        if (!email || !password) {
 
-    const reader = new FileReader();
+          loginError.textContent =
+            "Enter your email and password.";
 
-    reader.onload = function(event) {
-
-      const image = new Image();
-
-      image.onload = async function() {
-
-        const canvas =
-          document.createElement("canvas");
-
-        const maxWidth = 600;
-        const maxHeight = 600;
-
-        let width = image.width;
-        let height = image.height;
-
-        if (width > maxWidth) {
-          height =
-            height * (maxWidth / width);
-
-          width = maxWidth;
+          return;
         }
 
-        if (height > maxHeight) {
-          width =
-            width * (maxHeight / height);
+        loginError.textContent =
+          "";
 
-          height = maxHeight;
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-
-        const ctx =
-          canvas.getContext("2d");
-
-        ctx.drawImage(
-          image,
-          0,
-          0,
-          width,
-          height
-        );
-
-        const imageData =
-          canvas.toDataURL(
-            "image/jpeg",
-            0.5
-          );
+        status.textContent =
+          "● Logging in...";
 
         try {
 
-          const guestMessagesRef =
-            ref(
-              database,
-              "privateMessages/" +
-              selectedGuestId
-            );
-
-          const { push } =
-            await import(
-              "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js"
-            );
-
-          await push(
-            guestMessagesRef,
-            {
-              name: "Admin",
-              image: imageData,
-              timestamp: Date.now()
-            }
+          await signInWithEmailAndPassword(
+            auth,
+            email,
+            password
           );
 
-          imageInput.value = "";
+          adminLoggedIn = true;
+
+          loginBox.style.display =
+            "none";
+
+          inbox.style.display =
+            "block";
+
+          status.textContent =
+            "● Admin online";
+
+          startDatabaseListener();
 
         } catch (error) {
 
           console.error(
-            "Image send error:",
+            "Admin login error:",
             error
           );
 
-          alert(
-            "Picture failed: " +
-            error.message
-          );
+          status.textContent =
+            "● Login failed";
+
+          loginError.textContent =
+            error.message;
         }
-      };
 
-      image.src = event.target.result;
-    };
-
-    reader.readAsDataURL(file);
-
-  }
-);
-
-replyInput.addEventListener(
-  "keydown",
-  function(event) {
-
-    if (event.key === "Enter") {
-
-      event.preventDefault();
-
-      sendReply();
-
-    }
-
-  }
-);
-
-    onValue(
-  privateMessagesRef,
-  function(snapshot) {
-
-    allRooms =
-      snapshot.val() || {};
-
-    if (selectedGuestId) {
-      openConversation(selectedGuestId);
-    } else {
-      showInbox();
-    }
-
-  },
-  function(error) {
-
-    console.error(
-      "Database error:",
-      error
+      }
     );
 
-    status.textContent =
-      "● Database error";
 
-    inbox.innerHTML =
-      "<div class='error'>" +
-      "DATABASE ERROR: " +
-      error.message +
-      "</div>";
-  }
-);
+    /*
+      DATABASE LISTENER
+    */
+
+    function startDatabaseListener() {
+
+      onValue(
+        privateMessagesRef,
+
+        function(snapshot) {
+
+          allRooms =
+            snapshot.val() || {};
+
+          /*
+            If a conversation is already open,
+            refresh THAT conversation.
+            Do not return to inbox.
+          */
+
+          if (selectedGuestId) {
+
+            renderConversation(
+              selectedGuestId
+            );
+
+          } else {
+
+            showInbox();
+
+          }
+
+        },
+
+        function(error) {
+
+          console.error(
+            "Database error:",
+            error
+          );
+
+          status.textContent =
+            "● Database error";
+
+          inbox.innerHTML =
+            "<div class='error'>" +
+            "DATABASE ERROR: " +
+            error.message +
+            "</div>";
+        }
+      );
+
+    }
 
 
     /*
@@ -627,8 +576,8 @@ replyInput.addEventListener(
       backButton.style.display =
         "none";
 
-      inbox.innerHTML = "";
-
+      inbox.innerHTML =
+        "";
 
       const guestIds =
         Object.keys(allRooms);
@@ -674,7 +623,9 @@ replyInput.addEventListener(
 
 
           const lastMessage =
-            messages[messages.length - 1];
+            messages[
+              messages.length - 1
+            ];
 
 
           const guest =
@@ -703,7 +654,11 @@ replyInput.addEventListener(
 
           preview.textContent =
             lastMessage.text ||
-            "No message";
+            (
+              lastMessage.image
+                ? "📷 Image"
+                : "No message"
+            );
 
 
           const time =
@@ -724,7 +679,9 @@ replyInput.addEventListener(
 
 
           guest.appendChild(name);
+
           guest.appendChild(preview);
+
           guest.appendChild(time);
 
 
@@ -732,7 +689,10 @@ replyInput.addEventListener(
             "click",
             function() {
 
-              openConversation(
+              selectedGuestId =
+                userId;
+
+              renderConversation(
                 userId
               );
 
@@ -740,7 +700,9 @@ replyInput.addEventListener(
           );
 
 
-          inbox.appendChild(guest);
+          inbox.appendChild(
+            guest
+          );
 
         }
       );
@@ -749,15 +711,24 @@ replyInput.addEventListener(
 
 
     /*
-      OPEN ONE GUEST CONVERSATION
+      RENDER CURRENT CONVERSATION
     */
 
-    function openConversation(userId) {
-selectedGuestId = userId;
+    function renderConversation(
+      userId
+    ) {
+
       const userMessages =
         allRooms[userId];
 
+
       if (!userMessages) {
+
+        selectedGuestId =
+          null;
+
+        showInbox();
+
         return;
       }
 
@@ -785,7 +756,7 @@ selectedGuestId = userId;
 
 
       conversationMessages.innerHTML =
-  "";
+        "";
 
 
       const title =
@@ -796,12 +767,15 @@ selectedGuestId = userId;
 
       title.textContent =
         "💬 " +
-        (messages[0]?.name || "Guest");
+        (
+          messages[0]?.name ||
+          "Guest"
+        );
 
 
       conversationMessages.appendChild(
-  title
-);
+        title
+      );
 
 
       messages.forEach(
@@ -810,10 +784,11 @@ selectedGuestId = userId;
           const box =
             document.createElement("div");
 
+
           box.className =
-  message.name === "Admin"
-    ? "message admin-message"
-    : "message guest-message";
+            message.name === "Admin"
+              ? "message admin-message"
+              : "message guest-message";
 
 
           const name =
@@ -838,51 +813,62 @@ selectedGuestId = userId;
             userId;
 
 
+          box.appendChild(
+            name
+          );
+
+
+          box.appendChild(
+            guestId
+          );
+
+
           if (message.image) {
 
-  const imageElement =
-    document.createElement("img");
+            const image =
+              document.createElement("img");
 
-  imageElement.src =
-    message.image;
+            image.src =
+              message.image;
 
-  imageElement.style.width =
-    "100%";
+            image.style.width =
+              "100%";
 
-  imageElement.style.maxWidth =
-    "300px";
+            image.style.maxWidth =
+              "300px";
 
-  imageElement.style.borderRadius =
-    "12px";
+            image.style.borderRadius =
+              "12px";
 
-  imageElement.style.display =
-    "block";
+            image.style.display =
+              "block";
 
-  imageElement.style.marginTop =
-    "8px";
+            image.style.marginTop =
+              "8px";
 
-  box.appendChild(
-    imageElement
-  );
+            box.appendChild(
+              image
+            );
 
-}
+          }
 
-if (message.text) {
 
-  const text =
-    document.createElement("div");
+          if (message.text) {
 
-  text.className =
-    "text";
+            const text =
+              document.createElement("div");
 
-  text.textContent =
-    message.text;
+            text.className =
+              "text";
 
-  box.appendChild(
-    text
-  );
+            text.textContent =
+              message.text;
 
-}
+            box.appendChild(
+              text
+            );
+
+          }
 
 
           const time =
@@ -902,19 +888,333 @@ if (message.text) {
           }
 
 
-          box.appendChild(name);
-          box.appendChild(guestId);
-          box.appendChild(time);
+          box.appendChild(
+            time
+          );
 
 
           conversationMessages.appendChild(
-  box
-);
+            box
+          );
 
         }
       );
 
+
+      conversation.scrollTop =
+        conversation.scrollHeight;
+
     }
+
+
+    /*
+      SEND TEXT REPLY
+    */
+
+    replyButton.addEventListener(
+      "click",
+      sendReply
+    );
+
+
+    async function sendReply() {
+
+      const text =
+        replyInput.value.trim();
+
+
+      if (!text) {
+        return;
+      }
+
+
+      if (!selectedGuestId) {
+
+        alert(
+          "Open a guest conversation first."
+        );
+
+        return;
+      }
+
+
+      try {
+
+        const guestMessagesRef =
+          ref(
+            database,
+            "privateMessages/" +
+            selectedGuestId
+          );
+
+
+        await push(
+          guestMessagesRef,
+          {
+            name: "Admin",
+            text: text,
+            timestamp: Date.now()
+          }
+        );
+
+
+        replyInput.value =
+          "";
+
+        replyInput.focus();
+
+
+        /*
+          DO NOT call showInbox().
+          The Firebase listener will refresh
+          the current conversation.
+        */
+
+      } catch (error) {
+
+        console.error(
+          "Reply error:",
+          error
+        );
+
+        alert(
+          "Reply failed: " +
+          error.message
+        );
+
+      }
+
+    }
+
+
+    /*
+      ENTER TO SEND
+    */
+
+    replyInput.addEventListener(
+      "keydown",
+      function(event) {
+
+        if (
+          event.key === "Enter"
+        ) {
+
+          event.preventDefault();
+
+          sendReply();
+
+        }
+
+      }
+    );
+
+
+    /*
+      IMAGE BUTTON
+    */
+
+    imageButton.addEventListener(
+      "click",
+      function() {
+
+        imageInput.click();
+
+      }
+    );
+
+
+    /*
+      SEND IMAGE
+    */
+
+    imageInput.addEventListener(
+      "change",
+      function() {
+
+        const file =
+          imageInput.files[0];
+
+
+        if (!file) {
+          return;
+        }
+
+
+        if (
+          !file.type.startsWith(
+            "image/"
+          )
+        ) {
+
+          alert(
+            "Please select a picture."
+          );
+
+          imageInput.value =
+            "";
+
+          return;
+        }
+
+
+        if (!selectedGuestId) {
+
+          alert(
+            "Open a guest conversation first."
+          );
+
+          imageInput.value =
+            "";
+
+          return;
+        }
+
+
+        const reader =
+          new FileReader();
+
+
+        reader.onload =
+          function(event) {
+
+            const image =
+              new Image();
+
+
+            image.onload =
+              async function() {
+
+                const canvas =
+                  document.createElement(
+                    "canvas"
+                  );
+
+
+                const maxWidth =
+                  600;
+
+                const maxHeight =
+                  600;
+
+
+                let width =
+                  image.width;
+
+                let height =
+                  image.height;
+
+
+                if (
+                  width > maxWidth
+                ) {
+
+                  height =
+                    height *
+                    (
+                      maxWidth /
+                      width
+                    );
+
+                  width =
+                    maxWidth;
+                }
+
+
+                if (
+                  height > maxHeight
+                ) {
+
+                  width =
+                    width *
+                    (
+                      maxHeight /
+                      height
+                    );
+
+                  height =
+                    maxHeight;
+                }
+
+
+                canvas.width =
+                  width;
+
+                canvas.height =
+                  height;
+
+
+                const ctx =
+                  canvas.getContext(
+                    "2d"
+                  );
+
+
+                ctx.drawImage(
+                  image,
+                  0,
+                  0,
+                  width,
+                  height
+                );
+
+
+                const imageData =
+                  canvas.toDataURL(
+                    "image/jpeg",
+                    0.5
+                  );
+
+
+                try {
+
+                  const guestMessagesRef =
+                    ref(
+                      database,
+                      "privateMessages/" +
+                      selectedGuestId
+                    );
+
+
+                  await push(
+                    guestMessagesRef,
+                    {
+                      name: "Admin",
+                      image: imageData,
+                      timestamp: Date.now()
+                    }
+                  );
+
+
+                  imageInput.value =
+                    "";
+
+                } catch (error) {
+
+                  console.error(
+                    "Image send error:",
+                    error
+                  );
+
+                  alert(
+                    "Picture failed: " +
+                    error.message
+                  );
+
+                }
+
+              };
+
+
+            image.src =
+              event.target.result;
+
+          };
+
+
+        reader.readAsDataURL(file);
+
+      }
+    );
 
 
     /*
@@ -924,25 +1224,15 @@ if (message.text) {
     backButton.addEventListener(
       "click",
       function() {
-        
-selectedGuestId = null;
-        
+
+        selectedGuestId =
+          null;
+
         showInbox();
 
       }
     );
-if ("Notification" in window) {
 
-  const permission =
-    await Notification.requestPermission();
-
-  if (permission === "granted") {
-    console.log("Notifications enabled");
-  } else {
-    console.log("Notifications not allowed");
-  }
-
-}
   </script>
 
 </body>
