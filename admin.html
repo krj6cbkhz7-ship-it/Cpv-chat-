@@ -593,24 +593,23 @@ replyInput.addEventListener(
     }
 
   },
-);
-      function(error) {
+  function(error) {
 
-        console.error(
-          "Database error:",
-          error
-        );
-
-        status.textContent =
-          "● Database error";
-
-        inbox.innerHTML =
-          "<div class='error'>" +
-          "DATABASE ERROR: " +
-          error.message +
-          "</div>";
-      }
+    console.error(
+      "Database error:",
+      error
     );
+
+    status.textContent =
+      "● Database error";
+
+    inbox.innerHTML =
+      "<div class='error'>" +
+      "DATABASE ERROR: " +
+      error.message +
+      "</div>";
+  }
+);
 
 
     /*
