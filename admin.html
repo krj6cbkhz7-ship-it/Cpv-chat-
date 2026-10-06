@@ -111,6 +111,22 @@
       margin-top: 5px;
     }
 
+    /* UNREAD GUEST */
+
+    .guest.unread .guest-name {
+      font-weight: 900;
+    }
+
+    .guest.unread .preview {
+      font-weight: 700;
+      color: white;
+    }
+
+    .guest.unread .guest-time {
+      font-weight: bold;
+      color: #aaa;
+    }
+
     .conversation {
       display: none;
       max-width: 600px;
@@ -342,6 +358,8 @@
     } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
 
+    // FIREBASE CONFIG
+
     const firebaseConfig = {
 
       apiKey:
@@ -363,12 +381,14 @@
         "916226104692",
 
       appId:
-        "1:916226104692:web:27be19c8a22df397bd6021",
+        "1:916226104692:web27be19c8a22df397bd6021",
 
       measurementId:
         "G-SYWN64JMNH"
     };
 
+
+    // START FIREBASE
 
     const app =
       initializeApp(firebaseConfig);
@@ -379,6 +399,8 @@
     const database =
       getDatabase(app);
 
+
+    // HTML ELEMENTS
 
     const status =
       document.getElementById("status");
@@ -424,6 +446,8 @@
     const imageButton =
       document.getElementById("imageButton");
 
+
+    // DATABASE
 
     const privateMessagesRef =
       ref(
@@ -520,10 +544,10 @@
           allRooms =
             snapshot.val() || {};
 
+
           /*
-            If a conversation is already open,
-            refresh THAT conversation.
-            Do not return to inbox.
+            If conversation is open,
+            keep it open.
           */
 
           if (selectedGuestId) {
@@ -579,11 +603,123 @@
       inbox.innerHTML =
         "";
 
-      const guestIds =
-        Object.keys(allRooms);
+
+      const rooms = [];
 
 
-      if (guestIds.length === 0) {
+      /*
+        BUILD ROOM LIST
+      */
+
+      Object.keys(allRooms)
+        .forEach(
+          function(userId) {
+
+            const userMessages =
+              allRooms[userId];
+
+            if (!userMessages) {
+              return;
+            }
+
+
+            const messages =
+              Object.values(userMessages)
+                .filter(
+                  message => message
+                )
+                .sort(
+                  (a, b) =>
+                    (a.timestamp || 0) -
+                    (b.timestamp || 0)
+                );
+
+
+            if (messages.length === 0) {
+              return;
+            }
+
+
+            /*
+              FIND THE REAL GUEST NAME
+
+              Never use Admin as the guest name.
+            */
+
+            const guestMessage =
+              messages.find(
+                message =>
+                  message.name !== "Admin"
+              );
+
+
+            const guestName =
+              guestMessage?.name ||
+              "Guest";
+
+
+            /*
+              LATEST MESSAGE
+            */
+
+            const lastMessage =
+              messages[
+                messages.length - 1
+              ];
+
+
+            /*
+              CHECK IF LAST MESSAGE
+              CAME FROM GUEST
+            */
+
+            const unread =
+              lastMessage.name !== "Admin";
+
+
+            rooms.push({
+
+              userId:
+                userId,
+
+              guestName:
+                guestName,
+
+              lastMessage:
+                lastMessage,
+
+              unread:
+                unread,
+
+              lastTimestamp:
+                lastMessage.timestamp || 0
+
+            });
+
+          }
+        );
+
+
+      /*
+        SORT BY MOST RECENT MESSAGE
+
+        Newest conversation always goes
+        to the top.
+      */
+
+      rooms.sort(
+        function(a, b) {
+
+          return (
+            b.lastTimestamp -
+            a.lastTimestamp
+          );
+
+        }
+      );
+
+
+      if (rooms.length === 0) {
 
         inbox.innerHTML =
           "<div class='empty'>" +
@@ -594,39 +730,12 @@
       }
 
 
-      guestIds.forEach(
-        function(userId) {
+      /*
+        DISPLAY ROOMS
+      */
 
-          const userMessages =
-            allRooms[userId];
-
-          if (!userMessages) {
-            return;
-          }
-
-
-          const messages =
-            Object.values(userMessages)
-              .filter(
-                message => message
-              )
-              .sort(
-                (a, b) =>
-                  (a.timestamp || 0) -
-                  (b.timestamp || 0)
-              );
-
-
-          if (messages.length === 0) {
-            return;
-          }
-
-
-          const lastMessage =
-            messages[
-              messages.length - 1
-            ];
-
+      rooms.forEach(
+        function(room) {
 
           const guest =
             document.createElement("div");
@@ -635,6 +744,26 @@
             "guest";
 
 
+          /*
+            UNREAD
+
+            Guest message is bold until
+            the conversation is opened.
+          */
+
+          if (room.unread) {
+
+            guest.classList.add(
+              "unread"
+            );
+
+          }
+
+
+          /*
+            GUEST NAME
+          */
+
           const name =
             document.createElement("div");
 
@@ -642,9 +771,14 @@
             "guest-name";
 
           name.textContent =
-            lastMessage.name ||
-            "Guest";
+            room.guestName;
 
+
+          /*
+            PREVIEW
+
+            Show who sent the latest message.
+          */
 
           const preview =
             document.createElement("div");
@@ -652,14 +786,36 @@
           preview.className =
             "preview";
 
-          preview.textContent =
-            lastMessage.text ||
-            (
-              lastMessage.image
-                ? "📷 Image"
-                : "No message"
-            );
 
+          if (room.lastMessage.name === "Admin") {
+
+            preview.textContent =
+              "Admin: " +
+              (
+                room.lastMessage.text ||
+                (
+                  room.lastMessage.image
+                    ? "📷 Image"
+                    : "No message"
+                )
+              );
+
+          } else {
+
+            preview.textContent =
+              room.lastMessage.text ||
+              (
+                room.lastMessage.image
+                  ? "📷 Image"
+                  : "No message"
+              );
+
+          }
+
+
+          /*
+            TIME
+          */
 
           const time =
             document.createElement("div");
@@ -668,32 +824,46 @@
             "guest-time";
 
 
-          if (lastMessage.timestamp) {
+          if (room.lastTimestamp) {
 
             time.textContent =
               new Date(
-                lastMessage.timestamp
+                room.lastTimestamp
               ).toLocaleString();
 
           }
 
 
-          guest.appendChild(name);
+          guest.appendChild(
+            name
+          );
 
-          guest.appendChild(preview);
+          guest.appendChild(
+            preview
+          );
 
-          guest.appendChild(time);
+          guest.appendChild(
+            time
+          );
 
+
+          /*
+            OPEN CONVERSATION
+
+            Opening removes the unread
+            bold state because the guest
+            has now been viewed.
+          */
 
           guest.addEventListener(
             "click",
             function() {
 
               selectedGuestId =
-                userId;
+                room.userId;
 
               renderConversation(
-                userId
+                room.userId
               );
 
             }
@@ -759,6 +929,25 @@
         "";
 
 
+      /*
+        FIND GUEST NAME
+
+        Always use guest message,
+        never Admin.
+      */
+
+      const guestMessage =
+        messages.find(
+          message =>
+            message.name !== "Admin"
+        );
+
+
+      const guestName =
+        guestMessage?.name ||
+        "Guest";
+
+
       const title =
         document.createElement("div");
 
@@ -767,16 +956,17 @@
 
       title.textContent =
         "💬 " +
-        (
-          messages[0]?.name ||
-          "Guest"
-        );
+        guestName;
 
 
       conversationMessages.appendChild(
         title
       );
 
+
+      /*
+        DISPLAY MESSAGES
+      */
 
       messages.forEach(
         function(message) {
@@ -817,11 +1007,14 @@
             name
           );
 
-
           box.appendChild(
             guestId
           );
 
+
+          /*
+            IMAGE
+          */
 
           if (message.image) {
 
@@ -853,6 +1046,10 @@
           }
 
 
+          /*
+            TEXT
+          */
+
           if (message.text) {
 
             const text =
@@ -870,6 +1067,10 @@
 
           }
 
+
+          /*
+            TIME
+          */
 
           const time =
             document.createElement("div");
@@ -963,12 +1164,6 @@
 
         replyInput.focus();
 
-
-        /*
-          DO NOT call showInbox().
-          The Firebase listener will refresh
-          the current conversation.
-        */
 
       } catch (error) {
 
