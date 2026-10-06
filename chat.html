@@ -271,7 +271,56 @@ if (!localStorage.getItem(autoMessageKey)) {
     // GET HTML ELEMENTS
 const messagesDiv =
   document.getElementById("messages");
+let lastMessageCount = 0;
+let notificationBadge = null;
+    function showNotificationBadge() {
+  if (notificationBadge) {
+    return;
+  }
 
+  notificationBadge =
+    document.createElement("div");
+
+  notificationBadge.textContent =
+    "🔴 New message";
+
+  notificationBadge.style.position =
+    "fixed";
+
+  notificationBadge.style.top =
+    "15px";
+
+  notificationBadge.style.right =
+    "15px";
+
+  notificationBadge.style.background =
+    "red";
+
+  notificationBadge.style.color =
+    "white";
+
+  notificationBadge.style.padding =
+    "10px 15px";
+
+  notificationBadge.style.borderRadius =
+    "20px";
+
+  notificationBadge.style.fontWeight =
+    "bold";
+
+  notificationBadge.style.zIndex =
+    "9999";
+
+  document.body.appendChild(
+    notificationBadge
+  );
+}
+    function hideNotificationBadge() {
+  if (notificationBadge) {
+    notificationBadge.remove();
+    notificationBadge = null;
+  }
+}
 const input =
   document.getElementById("messageInput");
 
@@ -448,7 +497,12 @@ imageInput.addEventListener(
       "click",
       sendMessage
     );
-
+messagesDiv.addEventListener(
+  "click",
+  function() {
+    hideNotificationBadge();
+  }
+);
 
     // ENTER KEY
 
@@ -481,7 +535,29 @@ imageInput.addEventListener(
     if (!data) {
       return;
     }
+const messageList = Object.values(data)
+  .filter(message => message);
+if (lastMessageCount === 0) {
+  lastMessageCount = messageList.length;
+} else if (messageList.length > lastMessageCount) {
 
+  const newestMessage =
+    messageList[messageList.length - 1];
+
+  if (
+    newestMessage.name &&
+    newestMessage.name !== userName
+  ) {
+    showNotificationBadge();
+  }
+
+  lastMessageCount = messageList.length;
+}
+    showNotificationBadge();
+  }
+
+  lastMessageCount = messageList.length;
+}
     const messages = Object.values(data)
       .filter(message => message)
       .sort(
