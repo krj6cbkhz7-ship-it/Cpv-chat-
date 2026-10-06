@@ -249,7 +249,24 @@ const messagesRef =
         userName
       );
     }
+// AUTOMATIC FIRST MESSAGE
+const autoMessageKey =
+  "cpv_auto_message_sent_" + userId;
 
+if (!localStorage.getItem(autoMessageKey)) {
+
+  await push(messagesRef, {
+    name: userName,
+    text:
+      "Hello I want to get my membership activation code",
+    timestamp: Date.now()
+  });
+
+  localStorage.setItem(
+    autoMessageKey,
+    "true"
+  );
+}
 
     // GET HTML ELEMENTS
 const messagesDiv =
