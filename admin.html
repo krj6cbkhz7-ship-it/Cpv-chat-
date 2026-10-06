@@ -586,7 +586,11 @@ replyInput.addEventListener(
     allRooms =
       snapshot.val() || {};
 
-    showInbox();
+    if (selectedGuestId) {
+      openConversation(selectedGuestId);
+    } else {
+      showInbox();
+    }
 
   },
 );
@@ -921,7 +925,9 @@ if (message.text) {
     backButton.addEventListener(
       "click",
       function() {
-
+        
+selectedGuestId = null;
+        
         showInbox();
 
       }
