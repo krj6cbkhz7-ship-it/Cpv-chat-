@@ -586,10 +586,7 @@ replyInput.addEventListener(
     allRooms =
       snapshot.val() || {};
 
-    if (
-      selectedGuestId &&
-      conversation.style.display === "block"
-    ) {
+    if (selectedGuestId) {
       openConversation(selectedGuestId);
     } else {
       showInbox();
