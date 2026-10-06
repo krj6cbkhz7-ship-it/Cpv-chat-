@@ -180,7 +180,7 @@
       getDatabase,
       ref,
       push,
-      onChildAdded
+      onValue
     } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
 import {
   getAuth,
@@ -453,34 +453,123 @@ imageInput.addEventListener(
 
     // RECEIVE MESSAGES
 
-    onChildAdded(
-      messagesRef,
-      function(snapshot) {
+    onValue(
+  messagesRef,
+  function(snapshot) {
 
-        const message =
-          snapshot.val();
+    messagesDiv.innerHTML = "";
 
+    const data = snapshot.val();
 
-        if (!message) {
-          return;
-        }
+    if (!data) {
+      return;
+    }
 
+    const messages = Object.values(data)
+      .filter(message => message)
+      .sort(
+        (a, b) =>
+          (a.timestamp || 0) -
+          (b.timestamp || 0)
+      );
 
-        const messageElement =
+    messages.forEach(function(message) {
+
+      const messageElement =
+        document.createElement("div");
+
+      if (message.name === userName) {
+        messageElement.className =
+          "message sent";
+      } else {
+        messageElement.className =
+          "message received";
+      }
+
+      const nameElement =
+        document.createElement("div");
+
+      nameElement.className =
+        "sender-name";
+
+      nameElement.textContent =
+        message.name || "Guest";
+
+      messageElement.appendChild(
+        nameElement
+      );
+
+      if (message.image) {
+
+        const imageElement =
+          document.createElement("img");
+
+        imageElement.src =
+          message.image;
+
+        imageElement.style.maxWidth =
+          "100%";
+
+        imageElement.style.borderRadius =
+          "12px";
+
+        imageElement.style.display =
+          "block";
+
+        imageElement.style.marginTop =
+          "5px";
+
+        messageElement.appendChild(
+          imageElement
+        );
+      }
+
+      if (message.text) {
+
+        const textElement =
           document.createElement("div");
 
+        textElement.textContent =
+          message.text;
 
-        if (message.name === userName) {
+        messageElement.appendChild(
+          textElement
+        );
+      }
 
-          messageElement.className =
-            "message sent";
+      const timeElement =
+        document.createElement("div");
 
-        } else {
+      timeElement.className =
+        "message-time";
 
-          messageElement.className =
-            "message received";
-        }
+      if (message.timestamp) {
 
+        const date =
+          new Date(message.timestamp);
+
+        timeElement.textContent =
+          date.toLocaleTimeString([], {
+            hour: "numeric",
+            minute: "2-digit"
+          });
+      }
+
+      messageElement.appendChild(
+        timeElement
+      );
+
+      messagesDiv.appendChild(
+        messageElement
+      );
+
+    });
+
+    messagesDiv.scrollTop =
+      messagesDiv.scrollHeight;
+
+  }
+);
 
         // NAME
 
