@@ -207,7 +207,11 @@
       signInAnonymously
     }
       from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
-
+import {
+  getMessaging,
+  getToken,
+  onMessage
+} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-messaging.js";
 
     // FIREBASE CONFIG
 
@@ -249,8 +253,20 @@
 
     const database =
       getDatabase(app);
+const messaging =
+  getMessaging(app);
+if ("Notification" in window) {
 
+  const permission =
+    await Notification.requestPermission();
 
+  if (permission === "granted") {
+    console.log("Notifications allowed");
+  } else {
+    console.log("Notifications not allowed");
+  }
+
+}
     // HTML ELEMENTS
 
     const messagesDiv =
