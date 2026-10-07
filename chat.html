@@ -254,6 +254,7 @@ import {
     const database =
       getDatabase(app);
 const messaging =
+  const vapidKey = "BLMlVVzWFUWNQiMCurRVNPUCoUnPTdfP4MNz3LmYpekCtaFVHz4CguflAEB1TAsPF7iAb_pepKUUb4r9sQCZioo";
   getMessaging(app);
 if ("Notification" in window) {
 
@@ -261,10 +262,35 @@ if ("Notification" in window) {
     await Notification.requestPermission();
 
   if (permission === "granted") {
-    console.log("Notifications allowed");
-  } else {
-    console.log("Notifications not allowed");
+
+  try {
+
+    const token = await getToken(
+      messaging,
+      {
+        vapidKey: vapidKey
+      }
+    );
+
+    console.log(
+      "CPV Notification Token:",
+      token
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Notification token error:",
+      error
+    );
+
   }
+
+} else {
+
+  console.log(
+    "Notifications not allowed"
+  );
 
 }
     // HTML ELEMENTS
